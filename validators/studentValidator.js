@@ -1,12 +1,12 @@
 'use strict';
 
 const FIELDS = ['id', 'name', 'email', 'className', 'major'];
-const INPUT_FIELDS = ['name', 'email', 'className', 'major'];
+const INPUT_FIELDS = ['name', 'email', 'className'];
 const { CATALOG } = require('../services/studentCatalog');
 const MAJORS = CATALOG.majors;
 
 const LABELS = {
-  id: 'MSSV', name: 'Họ và tên', email: 'Email', className: 'Lớp', major: 'Ngành học',
+  id: 'MSSV', name: 'Họ và tên', email: 'Email', className: 'Lớp sinh hoạt', major: 'Ngành học',
 };
 const LIMITS = { id: 20, name: 100, email: 254, className: 30, major: 10 };
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f-\u009f]/u;
@@ -78,7 +78,7 @@ function validateFields(input, fields) {
   if (!errors.email && !isValidEmail(values.email)) {
     errors.email = 'Email không hợp lệ. Ví dụ: sinhvien@example.com.';
   }
-  if (!errors.major && !Object.hasOwn(MAJORS, values.major)) {
+  if (fields.includes('major') && !errors.major && !Object.hasOwn(MAJORS, values.major)) {
     errors.major = 'Vui lòng chọn ngành học hợp lệ.';
   }
   return { values, errors, isValid: Object.keys(errors).length === 0 };
@@ -89,19 +89,25 @@ function validateStudent(input) {
   return validateFields(input, FIELDS);
 }
 
-// POST chỉ nhận bốn trường. Client gửi id sẽ bị từ chối, không bị âm thầm dùng.
+// POST nhận ba trường; ngành lấy từ danh mục, không nhận id/major của client.
 function validateNewStudent(input) {
   const result = validateFields(input, INPUT_FIELDS);
   if (!result.errors.className) {
     const selectedClass = CATALOG.classes.find((item) => item.code === result.values.className);
     if (!selectedClass) {
-      result.errors.className = 'Vui lòng chọn lớp có sẵn trong danh mục.';
-    } else if (!result.errors.major && selectedClass.major !== result.values.major) {
-      result.errors.className = 'Lớp đã chọn không thuộc ngành học này. Vui lòng chọn lại lớp hoặc ngành.';
+      result.errors.className = 'Vui lòng chọn lớp sinh hoạt có sẵn trong danh mục.';
+    } else if (!Object.hasOwn(MAJORS, selectedClass.majorCode) || !/^[0-9]{2}$/.test(selectedClass.cohort)) {
+      result.errors.className = 'Lớp sinh hoạt chưa có ngành hoặc khóa tuyển sinh hợp lệ.';
+    } else {
+      result.values.major = selectedClass.majorCode;
     }
   }
   if (input && typeof input === 'object' && Object.hasOwn(input, 'id')) {
     result.errors.form = 'MSSV được hệ thống tự động cấp. Không được gửi trường id trong form.';
+  }
+  if (input && typeof input === 'object' && Object.hasOwn(input, 'major')) {
+    result.errors.form = (result.errors.form ? result.errors.form + ' ' : '') +
+      'Ngành học được xác định từ lớp sinh hoạt. Không được gửi trường major trong form.';
   }
   result.isValid = Object.keys(result.errors).length === 0;
   return result;

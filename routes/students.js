@@ -29,7 +29,7 @@ function createStudentRouter(store) {
 
   router.get('/', async (req, res) => {
     await renderPage(res, {
-      values: { name: '', email: '', className: '', major: '' },
+      values: { name: '', email: '', className: '' },
       created: req.query.created, deleted: req.query.deleted === '1', query: req.query,
     });
   });
@@ -41,7 +41,8 @@ function createStudentRouter(store) {
     }
     let student;
     try {
-      student = await store.add(result.values);
+      // Store tự validate và suy ngành lại; không gửi major đã suy vào input client.
+      student = await store.add(req.body);
     } catch (error) {
       if (error instanceof StudentConflictError) {
         return renderPage(res, { values: result.values, errors: error.errors, status: 422 });

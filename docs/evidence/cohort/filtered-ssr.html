@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Danh sách sinh viên và biểu mẫu thêm sinh viên phục vụ quản lý học vụ.">
+  <title>Danh sách sinh viên · Quản lý học vụ</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  
+  <a class="skip-link" href="#main-content">Đến nội dung chính</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/students" aria-label="Quản lý học vụ — danh sách sinh viên">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 5.5c3.5-1.2 6.5-.5 9 1.5 2.5-2 5.5-2.7 9-1.5v13c-3.5-1.2-6.5-.5-9 1.5-2.5-2-5.5-2.7-9-1.5v-13Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 7v13" stroke="currentColor" stroke-width="1.7"/></svg>
+        </span>
+        <span><strong>Quản lý học vụ</strong><span class="brand-subtitle">Không gian quản lý sinh viên</span></span>
+      </a>
+      <span class="header-label">Danh sách sinh viên</span>
+    </div>
+  </header>
+
+  <main id="main-content" class="page-shell">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">QUẢN LÝ SINH VIÊN</p>
+        <h1>Danh sách sinh viên</h1>
+        <p class="page-description">Thông tin học vụ rõ ràng, tập trung trong một nơi.</p>
+      </div>
+      <div class="student-total" aria-label="Tổng số sinh viên">
+        <strong>45</strong><span>sinh viên</span>
+      </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+<!-- POST lỗi: bỏ thuộc tính popover để form luôn hiển thị, không cần JavaScript mở lại. -->
+<section id="create-student" class="panel create-panel" aria-labelledby="create-title" popover="auto" role="dialog">
+  <div class="form-heading">
+    <div><span class="form-symbol" aria-hidden="true">+</span><h2 id="create-title">Thêm sinh viên</h2><p>Điền thông tin để tạo hồ sơ mới.</p></div>
+    
+      <button class="form-close native-popover-control" type="button" popovertarget="create-student" popovertargetaction="hide" aria-label="Đóng biểu mẫu thêm sinh viên">×</button>
+      <a class="form-close popover-fallback-control" href="#roster-title" aria-label="Trở lại hồ sơ sinh viên">×</a>
+    
+  </div>
+  <form class="create-form" action="/students" method="post" novalidate>
+    <p class="required-note">Các trường có <span aria-hidden="true">*</span> đều bắt buộc.</p>
+    <p class="auto-id-note">MSSV được tự động cấp theo khóa tuyển sinh; ngành học được xác định từ lớp sinh hoạt.</p>
+    <div class="form-field">
+      <label for="name">Họ và tên <span aria-hidden="true">*</span></label>
+      <input id="name" name="name" type="text" value="" maxlength="100" required autocomplete="name" autofocus placeholder="Ví dụ: Nguyễn Minh Anh">
+      
+    </div>
+    <div class="form-field">
+      <label for="email">Email <span aria-hidden="true">*</span></label>
+      <input id="email" name="email" type="email" value="" maxlength="254" required autocomplete="email" spellcheck="false" placeholder="sinhvien@example.com">
+      
+    </div>
+    <div class="form-field class-selection">
+      <label for="className">Lớp sinh hoạt <span aria-hidden="true">*</span></label>
+      <select id="className" name="className" required aria-describedby="className-hint">
+        <option value="">Chọn lớp sinh hoạt</option>
+        
+          <optgroup label="Công nghệ thông tin">
+            
+              <option value="24C11">24C11 — Công nghệ thông tin</option>
+            
+              <option value="24CNTT">24CNTT — Công nghệ thông tin</option>
+            
+              <option value="24CNTT1">24CNTT1 — Công nghệ thông tin</option>
+            
+              <option value="24CNTT2">24CNTT2 — Công nghệ thông tin</option>
+            
+          </optgroup>
+        
+          <optgroup label="Khoa học dữ liệu">
+            
+              <option value="25KHDL1">25KHDL1 — Khoa học dữ liệu</option>
+            
+              <option value="25KHDL2">25KHDL2 — Khoa học dữ liệu</option>
+            
+          </optgroup>
+        
+          <optgroup label="Toán học">
+            
+              <option value="26TOAN1">26TOAN1 — Toán học</option>
+            
+              <option value="26TOAN2">26TOAN2 — Toán học</option>
+            
+          </optgroup>
+        
+          <optgroup label="Vật lý">
+            
+              <option value="24VL1">24VL1 — Vật lý</option>
+            
+              <option value="24VL2">24VL2 — Vật lý</option>
+            
+          </optgroup>
+        
+      </select>
+      <p id="className-hint" class="field-hint">Lớp sinh hoạt là lớp quản lý hành chính, không phải lớp học phần. Server tự xác định ngành và khóa từ danh mục lớp đã chọn.</p>
+      
+    </div>
+    <div class="create-actions">
+      
+        <button class="cancel-button native-popover-control" type="button" popovertarget="create-student" popovertargetaction="hide">Hủy</button>
+        <a class="cancel-button popover-fallback-control" href="#roster-title">Hủy</a>
+      
+      <button class="submit-button" type="submit"><span aria-hidden="true">+</span> Thêm sinh viên</button>
+    </div>
+    <p class="form-footnote">Email phải khác với các hồ sơ đã có.</p>
+  </form>
+</section>
+
+
+    <div class="workspace-grid">
+      <section class="panel roster-panel" aria-labelledby="roster-title">
+        <div class="panel-heading">
+          <div><h2 id="roster-title">Hồ sơ sinh viên</h2><p>Danh sách thông tin đang được lưu trong hệ thống.</p></div>
+          <div class="roster-heading-actions">
+            <span class="count-badge">1 / 45 hồ sơ</span>
+            
+              <button class="submit-button add-student-button native-popover-control" type="button" popovertarget="create-student" popovertargetaction="show">+ Thêm sinh viên</button>
+              <a class="submit-button add-student-button popover-fallback-control" href="#create-student">+ Thêm sinh viên</a>
+            
+          </div>
+        </div>
+        <section class="search-section" aria-labelledby="search-title">
+          <h3 id="search-title">Tìm kiếm &amp; lọc</h3>
+          <form class="search-form" action="/students" method="get">
+            <div class="search-keyword">
+              <label for="search-q">Tên hoặc MSSV</label>
+              <input id="search-q" name="q" type="search" value="02600013" maxlength="100" placeholder="Ví dụ: Nguyen hoặc 026000" autocomplete="off">
+            </div>
+            <div>
+              <label for="filter-class">Lớp sinh hoạt</label>
+              <select id="filter-class" name="className">
+                <option value="">Tất cả lớp sinh hoạt</option>
+                
+                  <option value="24C11">24C11</option>
+                
+                  <option value="24CNTT">24CNTT</option>
+                
+                  <option value="24CNTT1">24CNTT1</option>
+                
+                  <option value="24CNTT2">24CNTT2</option>
+                
+                  <option value="24VL1">24VL1</option>
+                
+                  <option value="24VL2">24VL2</option>
+                
+                  <option value="25KHDL1">25KHDL1</option>
+                
+                  <option value="25KHDL2">25KHDL2</option>
+                
+                  <option value="26TOAN1">26TOAN1</option>
+                
+                  <option value="26TOAN2">26TOAN2</option>
+                
+              </select>
+            </div>
+            <div>
+              <label for="filter-major">Ngành học</label>
+              <select id="filter-major" name="major">
+                <option value="">Tất cả ngành</option>
+                
+                  <option value="CNTT">Công nghệ thông tin</option>
+                
+                  <option value="KHDL">Khoa học dữ liệu</option>
+                
+                  <option value="TOAN">Toán học</option>
+                
+                  <option value="VL">Vật lý</option>
+                
+              </select>
+            </div>
+            <div class="search-actions">
+              <button class="submit-button" type="submit">Tìm kiếm / Áp dụng</button>
+              <a class="reset-link" href="/students">Đặt lại bộ lọc</a>
+            </div>
+          </form>
+          
+            <div class="active-filters" aria-label="Điều kiện đang áp dụng">
+              <span class="filter-label">Đang áp dụng:</span>
+              <span class="filter-chip">Từ khóa: 02600013</span>
+              
+              
+              <a class="text-link clear-search" href="/students">Xóa tìm kiếm</a>
+            </div>
+          
+          <p class="result-count" role="status">Tìm thấy <strong>1</strong> / 45 sinh viên.</p>
+        </section>
+        
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Bảng sinh viên, có thể cuộn ngang trên màn hình nhỏ">
+            <table>
+              <caption class="visually-hidden">Danh sách 1 sinh viên gồm MSSV, họ tên, email, lớp sinh hoạt, ngành học và thao tác.</caption>
+              <colgroup><col class="col-id"><col class="col-name"><col class="col-email"><col class="col-class"><col class="col-major"><col class="col-actions"></colgroup>
+              <thead><tr><th scope="col">MSSV</th><th scope="col">Họ và tên</th><th scope="col">Email</th><th scope="col">Lớp sinh hoạt</th><th scope="col">Ngành học</th><th scope="col">Thao tác</th></tr></thead>
+              <tbody>
+                
+                  <tr>
+                    <th scope="row" class="student-id">02600013</th>
+                    <td class="student-name">Nguyễn QA Khóa 26</td>
+                    <td class="student-email">after-delete26@example.com</td>
+                    <td><span class="class-badge">26TOAN2</span></td>
+                    <td>Toán học</td>
+                    <td class="student-actions"><a class="delete-link" href="/students/02600013/delete" aria-label="Xóa sinh viên Nguyễn QA Khóa 26, MSSV 02600013">Xóa</a></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">Hiển thị 1–1 / 1 kết quả <span>Tối đa 20 sinh viên/trang</span></div>
+        
+        <nav class="pagination" aria-label="Phân trang danh sách sinh viên">
+          <p class="pagination-summary">Trang <strong>1</strong> / 1</p>
+          <div class="pagination-links">
+            
+              <span class="page-link page-disabled" aria-disabled="true">← Trước</span>
+            
+            
+              
+              
+                <span class="page-link page-current" aria-current="page" aria-label="Trang 1, hiện tại">1</span>
+              
+            
+            
+              <span class="page-link page-disabled" aria-disabled="true">Sau →</span>
+            
+          </div>
+        </nav>
+      </section>
+
+    </div>
+    <footer class="page-footer">Quản lý học vụ <span>Danh sách &amp; hồ sơ sinh viên</span></footer>
+  </main>
+</body>
+</html>

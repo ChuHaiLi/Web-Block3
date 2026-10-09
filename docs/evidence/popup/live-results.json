@@ -1,0 +1,25 @@
+{
+  "verifiedAt": "2026-10-09T11:02:23.669Z",
+  "checks": [
+    {
+      "url": "http://127.0.0.1:3000/students",
+      "status": 200,
+      "rows": 20
+    },
+    {
+      "url": "http://127.0.0.1:3000/students?page=2",
+      "status": 200,
+      "rows": 20
+    },
+    {
+      "url": "http://127.0.0.1:3000/students?q=nguyen&className=24CNTT1&major=CNTT",
+      "status": 200,
+      "rows": 1
+    },
+    {
+      "url": "http://127.0.0.1:3000/students/02400001/delete",
+      "status": 200,
+      "rows": 0
+    }
+  ]
+}

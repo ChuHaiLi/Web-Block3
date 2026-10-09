@@ -12,7 +12,7 @@ const { createApp } = require('../app');
 const { createStudentStore, StorageError } = require('../services/studentStore');
 
 const seedPath = path.join(__dirname, '../data/students.seed.json');
-const valid = { name: '  Nguyễn   Ánh Dương  ', email: 'New.Student@EXAMPLE.COM', className: '24CNTT1', major: 'CNTT' };
+const valid = { name: '  Nguyễn   Ánh Dương  ', email: 'New.Student@EXAMPLE.COM', className: '24CNTT1' };
 
 // HTTP trực tiếp trong Node, không phải JavaScript chạy trên trình duyệt.
 function request(base, pathname = '/students', { method = 'GET', body = '', type = 'application/x-www-form-urlencoded' } = {}) {
@@ -72,10 +72,10 @@ test('POST hợp lệ lưu JSON, trả 303; GET đích và refresh không thêm 
   const { base, filePath, logs } = await fixture(t);
   const post = await request(base, '/students', { method: 'POST', body: new URLSearchParams(valid).toString() });
   assert.equal(post.status, 303);
-  assert.equal(post.headers.location, '/students?created=02600011&page=3');
+  assert.equal(post.headers.location, '/students?created=02410011&page=3');
   const records = JSON.parse(await fs.readFile(filePath, 'utf8'));
   assert.equal(records.length, 41);
-  assert.deepEqual(records.at(-1), { id: '02600011', ...valid, name: 'Nguyễn Ánh Dương', email: 'New.Student@example.com' });
+  assert.deepEqual(records.at(-1), { id: '02410011', ...valid, major: 'CNTT', name: 'Nguyễn Ánh Dương', email: 'New.Student@example.com' });
   const after = await fs.readFile(filePath, 'utf8');
   for (let refresh = 0; refresh < 3; refresh++) {
     const page = await request(base, post.headers.location);
@@ -94,20 +94,20 @@ test('Thiếu trường, email sai/trùng và ngành lạ: 422, không ghi file'
   const cases = [
     [{ ...valid, name: '' }, 'name'],
     [{ ...valid, email: '' }, 'email'], [{ ...valid, className: '' }, 'className'],
-    [{ ...valid, major: '' }, 'major'], [{ ...valid, email: 'sai-email' }, 'email'],
+    [{ ...valid, email: 'sai-email' }, 'email'],
     [{ ...valid, email: 'MINH.AN01@EXAMPLE.COM' }, 'email'],
-    [{ ...valid, major: '__proto__' }, 'major'],
+    [{ ...valid, major: '__proto__' }, 'form'],
     [{ ...valid, name: 'Á'.repeat(101) }, 'name'], [{ ...valid, className: 'A'.repeat(31) }, 'className'],
   ];
   for (const [body, field] of cases) {
     const response = await request(base, '/students', { method: 'POST', body: new URLSearchParams(body).toString() });
     assert.equal(response.status, 422, field);
-    assert.match(response.html, new RegExp(`id="${field}-error"`));
+    assert.match(response.html, field === 'form' ? /Không được gửi trường major/ : new RegExp(`id="${field}-error"`));
     assert.equal(await fs.readFile(filePath, 'utf8'), before);
   }
   const preserved = await request(base, '/students', { method: 'POST', body: new URLSearchParams({ ...valid, email: 'bad' }).toString() });
   assert.match(preserved.html, /value="Nguyễn Ánh Dương"/);
-  assert.match(preserved.html, /value="CNTT" selected/);
+  assert.match(preserved.html, /value="24CNTT1" selected/);
 });
 
 test('Escape chuỗi HTML nguy hiểm cả trong form lỗi và danh sách SSR', async (t) => {
@@ -221,7 +221,7 @@ test('Dữ liệu tồn tại sau khi dừng và khởi động lại tiến tr�
     method: 'POST', body: new URLSearchParams({ ...valid, email: 'restart-next@example.com' }).toString(),
   });
   assert.equal(postRestart.status, 303);
-  assert.equal(postRestart.headers.location, '/students?created=02600012&page=3');
+  assert.equal(postRestart.headers.location, '/students?created=02410012&page=3');
   assert.equal(JSON.parse(await fs.readFile(filePath, 'utf8')).length, 42);
 });
 
@@ -246,12 +246,12 @@ test('Client không được đặt MSSV qua POST, kể cả id rỗng hoặc l�
 
 test('Hết MSSV trả 409, giữ input và không ghi JSON', async (t) => {
   const { base, filePath } = await fixture(t);
-  const exhausted = [{ id: '99999999', name: 'Nguyễn An', email: 'last@example.com', className: '24CNTT1', major: 'CNTT' }];
+  const exhausted = [{ id: '02499999', name: 'Nguyễn An', email: 'last@example.com', className: '24CNTT1', major: 'CNTT' }];
   const before = JSON.stringify(exhausted);
   await fs.writeFile(filePath, before, 'utf8');
   const response = await request(base, '/students', { method: 'POST', body: new URLSearchParams(valid).toString() });
   assert.equal(response.status, 409);
-  assert.match(response.html, /đã hết phạm vi 8 chữ số/);
+  assert.match(response.html, /đã hết phạm vi 5 chữ số thứ tự/);
   assert.match(response.html, /value="Nguyễn Ánh Dương"/);
   assert.equal(await fs.readFile(filePath, 'utf8'), before);
 });
@@ -362,18 +362,17 @@ test('Query sai kiểu/độ dài/ngành/lớp trả 400; không ghi dữ liệu
   assert.equal(await fs.readFile(filePath, 'utf8'), before);
 });
 
-test('POST lớp ngoài danh mục hoặc sai ngành: 422, giữ select, không ghi; 24C11 hợp lệ', async (t) => {
+test('POST lớp ngoài danh mục hoặc major giả mạo:422, giữ lớp, không ghi;24C11 suy CNTT', async (t) => {
   const { base, filePath } = await fixture(t);
   const before = await fs.readFile(filePath, 'utf8');
   for (const input of [{ ...valid, className: 'NO-CLASS' }, { ...valid, className: '24C11', major: 'VL' }]) {
     const response = await request(base, '/students', { method: 'POST', body: new URLSearchParams(input).toString() });
     assert.equal(response.status, 422);
-    assert.match(response.html, /id="className-error"/);
+    assert.match(response.html, input.major ? /Không được gửi trường major/ : /id="className-error"/);
     assert.match(response.html, /Trang <strong>1<\/strong> \/ 2/);
     assert.equal(await fs.readFile(filePath, 'utf8'), before);
     if (input.className === '24C11') {
       assert.match(response.html, /value="24C11" selected/);
-      assert.match(response.html, /value="VL" selected/);
     }
   }
   const post = await request(base, '/students', { method: 'POST', body: new URLSearchParams({ ...valid, className: '24C11' }).toString() });
@@ -413,7 +412,7 @@ test('HTTP Search + Filter + Pagination giữ query; form áp dụng mới khôn
   const { base, filePath } = await fixture(t);
   const records = Array.from({ length: 42 }, (_, index) => ({
     id: String(index + 1).padStart(8, '0'), ...valid,
-    name: 'Nguyễn An', email: `combined${index}@example.com`,
+    name: 'Nguyễn An', email: `combined${index}@example.com`, major: 'CNTT',
   }));
   await fs.writeFile(filePath, JSON.stringify(records), 'utf8');
   const before = await fs.readFile(filePath, 'utf8');
@@ -439,7 +438,7 @@ test('HTTP page bất thường trả 400; empty state và POST rỗng đều đ
   }
   const blank = await request(base, '/students', { method: 'POST' });
   assert.equal(blank.status, 422);
-  assert.equal((blank.html.match(/class="field-error"/g) || []).length, 4);
+  assert.equal((blank.html.match(/class="field-error"/g) || []).length, 3);
   assert.match(blank.html, /Trang <strong>1<\/strong> \/ 2/);
   assert.equal(await fs.readFile(filePath, 'utf8'), before);
   await fs.writeFile(filePath, '[]\n', 'utf8');
@@ -448,4 +447,111 @@ test('HTTP page bất thường trả 400; empty state và POST rỗng đều đ
   assert.match(empty.html, /Chưa có sinh viên/);
   assert.match(empty.html, /Trang <strong>1<\/strong> \/ 1/);
   assert.match(empty.html, /value="24C11"/);
+});
+
+test('Popup GET: form duy nhất, mở/đóng declarative, bảng sáu cột và không clientJS', async (t) => {
+  const { base, filePath } = await fixture(t);
+  const before = await fs.readFile(filePath, 'utf8');
+  const response = await request(base, '/students?page=2');
+  assert.equal(response.status, 200);
+  assert.match(response.html, /id="create-student"[^>]*popover="auto" role="dialog"/);
+  assert.match(response.html, /popovertarget="create-student" popovertargetaction="show"/);
+  assert.equal((response.html.match(/popovertargetaction="hide"/g) || []).length, 2);
+  assert.equal((response.html.match(/class="create-form"/g) || []).length, 1);
+  assert.match(response.html, /class="popover-fallback-control|popover-fallback-control"/);
+  assert.match(response.html, /<colgroup>[\s\S]*class="col-email"/);
+  assert.equal((response.html.match(/scope="col"/g) || []).length, 6);
+  assert.doesNotMatch(response.html, /<script\b|\bonclick=|\bonsubmit=|\bfetch\s*\(/i);
+  assert.equal(await fs.readFile(filePath, 'utf8'), before);
+});
+
+test('POST422: form SSR hiện trực tiếp, giữ giá trị và focus lỗi, JSON/counter không đổi', async (t) => {
+  const { base, filePath } = await fixture(t);
+  const statePath = path.join(path.dirname(filePath), 'students.id-state.json');
+  const before = await fs.readFile(filePath, 'utf8');
+  const counter = await fs.readFile(statePath, 'utf8');
+  const response = await request(base, '/students', {
+    method: 'POST', body: new URLSearchParams({ ...valid, email: 'not-an-email' }).toString(),
+  });
+  assert.equal(response.status, 422);
+  const sectionTag = response.html.match(/<section id="create-student"[^>]*>/)[0];
+  assert.match(sectionTag, /form-error-panel/);
+  assert.doesNotMatch(sectionTag, /popover|role="dialog"/);
+  assert.doesNotMatch(response.html, /popovertarget=/);
+  assert.ok(response.html.indexOf('id="create-student"') < response.html.indexOf('class="workspace-grid"'));
+  assert.match(response.html, /id="email"[^>]*value="not-an-email"[^>]*autofocus[^>]*aria-invalid="true"/);
+  assert.match(response.html, /value="Nguyễn Ánh Dương"/);
+  assert.match(response.html, /value="24CNTT1" selected/);
+  assert.match(response.html, /href="\/students">Hủy/);
+  assert.equal(await fs.readFile(filePath, 'utf8'), before);
+  assert.equal(await fs.readFile(statePath, 'utf8'), counter);
+});
+
+test('Lỗi form chung/clientID và409 vẫn thấy form; GET sau303 trở lại popup', async (t) => {
+  const { base, filePath } = await fixture(t);
+  const forbidden = await request(base, '/students', {
+    method: 'POST', body: new URLSearchParams({ ...valid, id: '12345678' }).toString(),
+  });
+  assert.equal(forbidden.status, 422);
+  assert.match(forbidden.html, /form-error-panel/);
+  assert.doesNotMatch(forbidden.html.match(/<section id="create-student"[^>]*>/)[0], /popover=/);
+  const created = await request(base, '/students', { method: 'POST', body: new URLSearchParams(valid).toString() });
+  assert.equal(created.status, 303);
+  const page = await request(base, created.headers.location);
+  assert.equal(page.status, 200);
+  assert.match(page.html, /id="create-student"[^>]*popover="auto"/);
+  assert.doesNotMatch(page.html, /form-error-panel/);
+  await fs.writeFile(filePath, JSON.stringify([{ id: '02499999', ...valid, major: 'CNTT', email: 'last@example.com' }]), 'utf8');
+  const exhausted = await request(base, '/students', { method: 'POST', body: new URLSearchParams(valid).toString() });
+  assert.equal(exhausted.status, 409);
+  assert.match(exhausted.html, /form-error-panel/);
+  assert.doesNotMatch(exhausted.html.match(/<section id="create-student"[^>]*>/)[0], /popover=/);
+});
+
+test('Empty/no results vẫn có nút mở popup và giữ hai trạng thái riêng', async (t) => {
+  const { base, filePath } = await fixture(t);
+  const missing = await request(base, '/students?q=no-matching-student');
+  assert.match(missing.html, /Không tìm thấy sinh viên phù hợp/);
+  assert.match(missing.html, /popovertargetaction="show"/);
+  await fs.writeFile(filePath, '[]\n', 'utf8');
+  const empty = await request(base);
+  assert.equal(empty.status, 200);
+  assert.match(empty.html, /Chưa có sinh viên/);
+  assert.match(empty.html, /popovertargetaction="show"/);
+  assert.equal((empty.html.match(/class="create-form"/g) || []).length, 1);
+});
+
+test('Thuật ngữ lớp sinh hoạt trên bảng/form/filter/xóa/lỗi; giữ className và dữ liệu', async (t) => {
+  const { base, filePath } = await fixture(t);
+  const before = await fs.readFile(filePath, 'utf8');
+  const statePath = path.join(path.dirname(filePath), 'students.id-state.json');
+  const counter = await fs.readFile(statePath, 'utf8');
+  const list = await request(base, '/students?className=24CNTT1&major=CNTT');
+  assert.equal(list.status, 200);
+  assert.match(list.html, /<th scope="col">Lớp sinh hoạt<\/th>/);
+  assert.match(list.html, /<label for="filter-class">Lớp sinh hoạt<\/label>/);
+  assert.match(list.html, /<label for="className">Lớp sinh hoạt /);
+  assert.match(list.html, /Tất cả lớp sinh hoạt/);
+  assert.match(list.html, /Chọn lớp sinh hoạt/);
+  assert.match(list.html, /Lớp sinh hoạt: 24CNTT1/);
+  assert.match(list.html, /id="className" name="className"/);
+  assert.match(list.html, /id="filter-class" name="className"/);
+  assert.match(list.html, /value="24CNTT1" selected/);
+  assert.doesNotMatch(list.html, />Lớp<\/|Chọn lớp học</);
+  const confirmation = await request(base, '/students/02400001/delete');
+  assert.equal(confirmation.status, 200);
+  assert.match(confirmation.html, /<dt>Lớp sinh hoạt<\/dt><dd>24CNTT1<\/dd>/);
+  for (const input of [
+    { ...valid, className: '' }, { ...valid, className: 'UNKNOWN' },
+    { ...valid, className: 'A'.repeat(31) },
+  ]) {
+    const response = await request(base, '/students', { method: 'POST', body: new URLSearchParams(input).toString() });
+    assert.equal(response.status, 422);
+    assert.match(response.html, /id="className-error" class="field-error">[^<]*[Ll]ớp sinh hoạt/);
+  }
+  const invalidFilter = await request(base, '/students?className=UNKNOWN');
+  assert.equal(invalidFilter.status, 400);
+  assert.match(invalidFilter.html, /Lớp sinh hoạt dùng để lọc không tồn tại/);
+  assert.equal(await fs.readFile(filePath, 'utf8'), before);
+  assert.equal(await fs.readFile(statePath, 'utf8'), counter);
 });

@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-10-09T11:50:39.051Z",
+  "browser": "Chrome 154.0.8037.98",
+  "javaScriptEnabled": false,
+  "initialCount": 40,
+  "note": "Mọi POST dùng bản sao tạm; server3000 chỉ GET. State/marker/catalog thay đổi có chủ đích bởi nâng cấp, không bởi test.",
+  "results": [
+    {
+      "check": "GET200/SSR có20 dòng, popup chỉ tên/email/lớp, vẫn có bộ lọc ngành, không script",
+      "status": "PASS"
+    },
+    {
+      "check": "Popup native/Enter/Tab/Esc/X vẫn hoạt động, dropdown ghi rõ ngành từng lớp",
+      "status": "PASS"
+    },
+    {
+      "check": "POST422 hiện formSSR ba lỗi; email sai giữ tên/lớp, JSON/counter không đổi",
+      "status": "PASS"
+    },
+    {
+      "check": "5POST→303→GET đúng024/025/026 và major;24C11 suyCNTT;refresh không thêm trùng",
+      "status": "PASS"
+    },
+    {
+      "check": "GET/Hủy/xóa303 giữ đúnghồ sơ; khởi tạo lại store giữcounter, mãtiếp02600013, không dùng02600011/12",
+      "status": "PASS"
+    },
+    {
+      "check": "Search không dấu/AND lớp-ngành/Reset/Pagination20/20/5/empty-results giữ hoạt động",
+      "status": "PASS"
+    },
+    {
+      "check": "Mobile390/320px không tràn trang, popup ba trường/Hủy không cần JavaScript",
+      "status": "PASS"
+    },
+    {
+      "check": "ViewSource/HTML đã có MSSV và ngành server suy, không clientfetch/render",
+      "status": "PASS"
+    },
+    {
+      "check": "Server3000 GET200 sau migration,40hồ sơ/seed/majors nguyênbytes; statev2/catalognângcấp không bịtestghi",
+      "status": "PASS"
+    }
+  ]
+}

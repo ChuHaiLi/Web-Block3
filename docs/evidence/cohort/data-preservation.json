@@ -1,0 +1,57 @@
+{
+  "verifiedAt": "2026-10-09T11:50:39.044Z",
+  "count": 40,
+  "backup": "D:\\VSCode\\HCMUS\\Web\\Block3\\data\\backups\\before-cohort-20261009113740363",
+  "oldMismatches": [],
+  "previousAllocation": {
+    "version": 1,
+    "highWaterMark": "02600011"
+  },
+  "allocation": {
+    "version": 2,
+    "legacyHighWaterMark": "02600011",
+    "counters": {
+      "024": "10010",
+      "025": "00010",
+      "026": "00011"
+    }
+  },
+  "files": {
+    "students.json": {
+      "beforeTests": "6caab3dd9dd84c9bbe80d734f8c87dcd8d904bbd2ceaa0c6b2fc1262d383ff66",
+      "afterTests": "6caab3dd9dd84c9bbe80d734f8c87dcd8d904bbd2ceaa0c6b2fc1262d383ff66",
+      "unchangedByTests": true,
+      "unchangedSinceUpgradeStart": true
+    },
+    "students.id-state.json": {
+      "beforeTests": "a7870c085a9e46cf6012b8ab4819a88af02b02b9e2bf38969238a93a45890ce5",
+      "afterTests": "a7870c085a9e46cf6012b8ab4819a88af02b02b9e2bf38969238a93a45890ce5",
+      "unchangedByTests": true,
+      "unchangedSinceUpgradeStart": false
+    },
+    "students.id-state.json.initialized": {
+      "beforeTests": "4b05a6021d8d518264e43cb798678e4e513c9a2d24ebc27b73f710bd6e9de82c",
+      "afterTests": "4b05a6021d8d518264e43cb798678e4e513c9a2d24ebc27b73f710bd6e9de82c",
+      "unchangedByTests": true,
+      "unchangedSinceUpgradeStart": false
+    },
+    "classes.json": {
+      "beforeTests": "96484ac457d29c04b928aa21c424bad01b135c8de70fd027efb17814e4325bab",
+      "afterTests": "96484ac457d29c04b928aa21c424bad01b135c8de70fd027efb17814e4325bab",
+      "unchangedByTests": true,
+      "unchangedSinceUpgradeStart": false
+    },
+    "majors.json": {
+      "beforeTests": "0a1aff817c4692edc8d51e0b52630993d2d6d3265b658bce62306373630f6b54",
+      "afterTests": "0a1aff817c4692edc8d51e0b52630993d2d6d3265b658bce62306373630f6b54",
+      "unchangedByTests": true,
+      "unchangedSinceUpgradeStart": true
+    },
+    "students.seed.json": {
+      "beforeTests": "287559c47c9485d6beff7aee6dbccaf12a7a2c7691fc532f17859d91a605e66c",
+      "afterTests": "287559c47c9485d6beff7aee6dbccaf12a7a2c7691fc532f17859d91a605e66c",
+      "unchangedByTests": true,
+      "unchangedSinceUpgradeStart": true
+    }
+  }
+}

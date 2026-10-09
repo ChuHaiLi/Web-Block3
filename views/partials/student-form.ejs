@@ -1,0 +1,52 @@
+<% const firstInvalidField = ['name', 'email', 'className'].find((field) => errors[field]) || 'name'; %>
+<!-- POST lỗi: bỏ thuộc tính popover để form luôn hiển thị, không cần JavaScript mở lại. -->
+<section id="create-student" class="panel create-panel<%= hasFormErrors ? ' form-error-panel' : '' %>" aria-labelledby="create-title"<% if (!hasFormErrors) { %> popover="auto" role="dialog"<% } %>>
+  <div class="form-heading">
+    <div><span class="form-symbol" aria-hidden="true">+</span><h2 id="create-title">Thêm sinh viên</h2><p><%= hasFormErrors ? 'Vui lòng sửa thông tin bên dưới rồi gửi lại.' : 'Điền thông tin để tạo hồ sơ mới.' %></p></div>
+    <% if (hasFormErrors) { %>
+      <a class="form-close" href="/students" aria-label="Đóng biểu mẫu thêm sinh viên">×</a>
+    <% } else { %>
+      <button class="form-close native-popover-control" type="button" popovertarget="create-student" popovertargetaction="hide" aria-label="Đóng biểu mẫu thêm sinh viên">×</button>
+      <a class="form-close popover-fallback-control" href="#roster-title" aria-label="Trở lại hồ sơ sinh viên">×</a>
+    <% } %>
+  </div>
+  <form class="create-form" action="/students" method="post" novalidate>
+    <p class="required-note">Các trường có <span aria-hidden="true">*</span> đều bắt buộc.</p>
+    <p class="auto-id-note">MSSV được tự động cấp theo khóa tuyển sinh; ngành học được xác định từ lớp sinh hoạt.</p>
+    <div class="form-field">
+      <label for="name">Họ và tên <span aria-hidden="true">*</span></label>
+      <input id="name" name="name" type="text" value="<%= values.name %>" maxlength="100" required autocomplete="name"<% if (firstInvalidField === 'name') { %> autofocus<% } %><% if (errors.name) { %> aria-invalid="true" aria-describedby="name-error"<% } %> placeholder="Ví dụ: Nguyễn Minh Anh">
+      <% if (errors.name) { %><p id="name-error" class="field-error"><%= errors.name %></p><% } %>
+    </div>
+    <div class="form-field">
+      <label for="email">Email <span aria-hidden="true">*</span></label>
+      <input id="email" name="email" type="email" value="<%= values.email %>" maxlength="254" required autocomplete="email" spellcheck="false"<% if (firstInvalidField === 'email') { %> autofocus<% } %><% if (errors.email) { %> aria-invalid="true" aria-describedby="email-error"<% } %> placeholder="sinhvien@example.com">
+      <% if (errors.email) { %><p id="email-error" class="field-error"><%= errors.email %></p><% } %>
+    </div>
+    <div class="form-field class-selection">
+      <label for="className">Lớp sinh hoạt <span aria-hidden="true">*</span></label>
+      <select id="className" name="className" required aria-describedby="className-hint<% if (errors.className) { %> className-error<% } %>"<% if (firstInvalidField === 'className') { %> autofocus<% } %><% if (errors.className) { %> aria-invalid="true"<% } %>>
+        <option value="">Chọn lớp sinh hoạt</option>
+        <% for (const [code, label] of Object.entries(majors)) { %>
+          <optgroup label="<%= label %>">
+            <% for (const item of catalogClasses.filter((entry) => entry.majorCode === code)) { %>
+              <option value="<%= item.code %>"<% if (values.className === item.code) { %> selected<% } %>><%= item.name %> — <%= label %></option>
+            <% } %>
+          </optgroup>
+        <% } %>
+      </select>
+      <p id="className-hint" class="field-hint">Lớp sinh hoạt là lớp quản lý hành chính, không phải lớp học phần. Server tự xác định ngành và khóa từ danh mục lớp đã chọn.</p>
+      <% if (errors.className) { %><p id="className-error" class="field-error"><%= errors.className %></p><% } %>
+    </div>
+    <div class="create-actions">
+      <% if (hasFormErrors) { %>
+        <a class="cancel-button" href="/students">Hủy</a>
+      <% } else { %>
+        <button class="cancel-button native-popover-control" type="button" popovertarget="create-student" popovertargetaction="hide">Hủy</button>
+        <a class="cancel-button popover-fallback-control" href="#roster-title">Hủy</a>
+      <% } %>
+      <button class="submit-button" type="submit"><span aria-hidden="true">+</span> Thêm sinh viên</button>
+    </div>
+    <p class="form-footnote">Email phải khác với các hồ sơ đã có.</p>
+  </form>
+</section>

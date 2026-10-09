@@ -1,237 +1,182 @@
 # Báo cáo kỹ thuật — Student Management SSR
 
-## 1. Stack và phạm vi
+## 1. Công nghệ, SSR và kiến trúc
 
-Node.js là môi trường chạy JavaScript phía máy chủ. Express.js là web framework — khung phát triển web — tổ chức HTTP route và middleware. EJS (Embedded JavaScript — JavaScript nhúng) là template engine — bộ máy xử lý mẫu. HTML (HyperText Markup Language — ngôn ngữ đánh dấu siêu văn bản) và CSS (Cascading Style Sheets — ngôn ngữ định dạng) tạo giao diện học vụ responsive — thích ứng màn hình.
+Node.js là môi trường chạy JavaScript phía máy chủ. Express.js là web framework — khung phát triển web — tổ chức HTTP (Hypertext Transfer Protocol — giao thức truyền tải siêu văn bản) routes/middleware. EJS (Embedded JavaScript — JavaScript nhúng) là template engine — bộ máy xử lý mẫu. HTML (HyperText Markup Language — ngôn ngữ đánh dấu siêu văn bản)/CSS (Cascading Style Sheets — ngôn ngữ định dạng) thuần tạo giao diện học vụ responsive — thích ứng màn hình.
 
-**SSR (Server-Side Rendering — kết xuất phía máy chủ)**: Express đọc JSON, tính danh sách cần hiển thị rồi EJS tạo HTML hoàn chỉnh trước khi trả về. Trình duyệt nhận tên/MSSV trong response, không cần tải dữ liệu hay tạo bảng bằng JavaScript.
+**SSR (Server-Side Rendering — kết xuất phía máy chủ)**: server đọc JSON, tìm/lọc/chia trang rồi EJS tạo HTML trước khi trả response. View Source có MSSV/tên/ngành; không cần JavaScript để tải dữ liệu hoặc tạo bảng. Popup chỉ mở/đóng phần HTML đã có, không phải CSR (Client-Side Rendering — kết xuất phía trình duyệt).
 
-Không dùng CSR (Client-Side Rendering — kết xuất phía trình duyệt), SPA (Single-Page Application — ứng dụng một trang), AJAX (Asynchronous JavaScript and XML — trao đổi dữ liệu bất đồng bộ bằng JavaScript), Fetch API — giao diện lấy tài nguyên bằng JavaScript — database server hoặc ORM (Object-Relational Mapping — ánh xạ đối tượng và dữ liệu quan hệ).
+Không dùng AJAX (Asynchronous JavaScript and XML — trao đổi bất đồng bộ bằng JavaScript), Fetch API — giao diện lấy tài nguyên bằng JavaScript — SPA (Single-Page Application — ứng dụng một trang), database server hoặc ORM (Object-Relational Mapping — ánh xạ đối tượng-dữ liệu quan hệ). Express/EJS vẫn là hai dependency — thư viện phụ thuộc — trực tiếp; không thêm thư viện.
 
-Express và EJS vẫn là hai dependency — thư viện phụ thuộc — trực tiếp; không đổi package.json/package-lock.json. Công cụ Chrome chỉ phục vụ kiểm thử ngoài dự án.
-
-## 2. Kiến trúc và trách nhiệm
-
-| File | Vai trò |
+| File | Trách nhiệm |
 |---|---|
-| server.js | Khởi tạo kho dữ liệu, kiểm tra cổng và mở server localhost |
-| app.js | Middleware — xử lý trung gian — parse form, CSS, header/log và lỗi |
-| routes/students.js | Điều phối GET/POST, một hàm renderPage dùng chung |
-| studentCatalog.js | Đọc hai JSON danh mục khi khởi động, kiểm tra tính nhất quán |
-| studentValidator.js | Validation — kiểm tra tính hợp lệ — input và tương thích dữ liệu cũ |
-| studentStore.js | Đọc/ghi JSON, hàng đợi chung thêm/xóa, bộ đếm MSSV bền vững |
-| studentSearch.js | Kiểm tra query, tìm/lọc, chia trang và xây URL |
-| students.ejs | Bảng, form, lỗi và phân trang HTML; không đọc JSON hoặc cấp mã |
-| delete-student.ejs | Năm trường hồ sơ, cảnh báo và form xác nhận xóa bằng POST |
+|server.js |Khởi tạo/migrate kho trước khi mở localhost |
+|app.js |Middleware — xử lý trung gian — parse form, CSS, header/log/lỗi |
+|routes/students.js |GET/POST, renderPage chung và303 |
+|services/studentCatalog.js |Đọc/kiểm tra JSON ngành/lớp/khóa |
+|validators/studentValidator.js |Tên/email/lớp đầu vào, suy ngành; đọc legacy |
+|services/studentStore.js |Hàng đợi JSON, counter theo khóa, migration, add/remove/getById |
+|services/studentSearch.js |Query, tìm/lọc/phân trang20, tạo URL |
+|views/students.ejs |Bảng/bộ lọc/phân trang/thông báo |
+|views/partials/student-form.ejs |Popup ba trường và fallback POST lỗi |
+|views/delete-student.ejs |Xác nhậnxóa, năm trường và formPOST |
 
-```text
-GET /students?q=...&className=...&major=...&page=...
-  → đọc toàn bộ JSON
-  → kiểm tra query
-  → tìm/lọc toàn bộ
-  → đếm kết quả, tính tổng trang, slice tối đa 20
-  → EJS render HTML 200
+## 2. Model và lớp sinh hoạt
 
-POST /students
-  → parse bốn trường form, validation danh mục
-  → hàng đợi: đọc mới nhất → email trùng → reserve mã vào state → thêm → ghi
-  → tìm trang chứa hồ sơ đã lưu
-  → 303 Location
-  → GET render HTML
+Model — mô hình dữ liệu — vẫn đúng năm thuộc tính, không thêm cohort/studentCode vào hồ sơ:
 
-GET /students/:id/delete → kiểm tra ID → đọc hồ sơ → EJS xác nhận200 hoặc404
-POST /students/:id/delete → cùng hàng đợi thêm/xóa → kiểm tra state/hồ sơ
-  → ghi JSON bỏ đúng một MSSV → 303 /students?deleted=1 → GET trang1
-```
-
-Cùng renderPage truyền đầy đủ students, totalCount, resultCount, classes, filters, hasFilters, clearSearchUrl, pagination, values, errors, createdId, success, majors, catalogClasses và deleted cho cả GET lẫn POST có lỗi. Trang xác nhận dùng locals riêng student/majors. Không chữa lỗi thiếu locals — biến truyền vào template — bằng cách giấu thông tin hoặc bỏ validation.
-
-## 3. Model và dữ liệu hiện có
-
-Model — mô hình dữ liệu — đúng năm trường. ID (identifier — định danh) ở bài tập này chính là MSSV, không tách studentCode.
-
-| Trường | Kiểu | Quy tắc tạo mới |
+| Trường | Kiểu | Nguồn/quy tắc tạo mới |
 |---|---|---|
-| id | string | Server cấp 8 chữ số, duy nhất, giữ số 0 đầu |
-| name | string | Bắt buộc, 1–100 ký tự Unicode; NFC và gộp khoảng trắng |
-| email | string | Cú pháp thông dụng, <=254 ký tự; duy nhất không phân biệt hoa/thường |
-| className | string | Mã lớp <=30 ký tự trong classes.json, thuộc major |
-| major | string | Mã ngành <=10 ký tự trong majors.json |
+|id |string |Server cấp0YYNNNNN,8 chữ số duy nhất |
+|name |string |Người dùng;1–100 ký tự Unicode/NFC, gộp khoảng trắng |
+|email |string |Người dùng;<=254 ký tự, cú pháp thông dụng, duy nhất không phân biệt hoa/thường |
+|className |string |Người dùng chọn mã lớp sinh hoạt<=30 ký tự có sẵn |
+|major |string |Server lấy majorCode trong danh mục lớp |
 
-Unicode là chuẩn ký tự đa ngôn ngữ. NFC (Normalization Form C — dạng chuẩn hóa tổ hợp) giữ tên Việt có dấu. Không dùng biểu thức tên quá hạn chế, chấp nhận dấu nháy/gạch nối và escape khi hiển thị.
+ID (identifier — định danh) ở đây chính là MSSV. Unicode là chuẩn ký tự đa ngôn ngữ; NFC (Normalization Form C — dạng chuẩn hóa tổ hợp) giữ tên Việt có dấu. Không hạn chế tên bằng regex — biểu thức chính quy — quá chặt.
 
-Có **42 sinh viên**: 40 mẫu, bản ghi mã cũ `2222`/lớp `24CNTT` và bản ghi demo `02600011`/lớp `24C11`. Cả hai lớp thuộc CNTT. Đối chiếu hash xác nhận không thay đổi bất kỳ byte nào của file thật trong lần hoàn thiện này.
+**Lớp sinh hoạt (lớp hành chính)** là lớp quản lý hành chính của sinh viên; một sinh viên thường thuộc một lớp tại một thời điểm. Sinh viên có thể đăng ký nhiều **lớp học phần** của các môn khác nhau. Dự án chỉ quản lý lớp sinh hoạt, **chưa quản lý đăng ký học phần**. Giữ nguyên thuộc tính/query className.
 
-Validator đọc giữ chính sách MSSV cũ 4–20 ký tự Latin/số/gạch nối. Store dùng giá trị chuẩn hóa để kiểm tra trùng nhưng giữ nguyên tất cả giá trị bản ghi đã có khi đọc/ghi lại. Validation tạo mới kiểm tra danh mục nghiêm ngặt, không đổi chính sách đọc cũ để làm dữ liệu hợp lệ trước đây bị mất.
+## 3. Danh mục và suy ngành/khóa
 
-## 4. Danh mục Class/Major độc lập
-
-`data/majors.json`: mảng các đối tượng `{code, name}`, bốn ngành CNTT/KHDL/TOAN/VL.
-
-`data/classes.json`: mảng các đối tượng `{code, major}`, mười lớp kế thừa từ dữ liệu:
-
-| Ngành | Lớp |
-|---|---|
-| CNTT — Công nghệ thông tin | 24C11, 24CNTT, 24CNTT1, 24CNTT2 |
-| KHDL — Khoa học dữ liệu | 25KHDL1, 25KHDL2 |
-| TOAN — Toán học | 26TOAN1, 26TOAN2 |
-| VL — Vật lý | 24VL1, 24VL2 |
-
-Loader đọc UTF-8 một lần khi module khởi động, kiểm tra mảng không rỗng, đúng trường, kiểu/độ dài, mã trùng và major tham chiếu tồn tại. Danh mục trả về được đóng băng để không sửa vô tình trong bộ nhớ. JSON danh mục hỏng làm khởi động báo lỗi, không tự tạo danh mục khác hoặc ghi đè sinh viên. Sau khi sửa danh mục cần restart đúng server.
-
-Các select của form tạo và tìm/lọc đều server render từ danh mục. Form tạo chỉ hai input name/email, hai select major/className. Select lớp chia nhóm bằng optgroup tên ngành. Không tự cập nhật dropdown lớp khi đổi ngành; người dùng chọn trong nhóm đúng và server kiểm tra khi POST. Đây là chủ đích để giữ HTML SSR không có JavaScript.
-
-Lớp/ngành đều phải có sẵn; lớp hợp lệ nhưng chọn ngành khác cũng lỗi 422 tại className. Ngành không hợp lệ lỗi tại major. Select hợp lệ đã chọn được giữ sau lỗi. Giá trị tùy ý không được thêm làm option có thể chọn.
-
-## 5. Validation và an toàn dữ liệu đầu vào
-
-Không tin req.body hoặc req.query; mỗi trường phải là một chuỗi, không mảng/đối tượng, không ký tự điều khiển, có giới hạn độ dài. Bốn trường POST đều bắt buộc. Trường id do client gửi bị từ chối kể cả rỗng/sai kiểu/lặp; trường khác không được lưu vào model.
-
-Tên chuẩn hóa Unicode và khoảng trắng; email giữ phần trước @, chuẩn hóa tên miền chữ thường khi lưu. So trùng trên toàn địa chỉ đã trim không phân biệt hoa/thường. Email dùng chính sách ASCII (American Standard Code for Information Interchange — bộ mã ký tự cơ bản) thông dụng, kiểm tra cấu trúc phần tên/domain; không giới hạn trường học, không hỗ trợ mọi địa chỉ quốc tế hóa hoặc xác minh hộp thư.
-
-EJS `<%=` escape — chuyển ký tự HTML đặc biệt thành văn bản — trên bảng, form, filter và href. Không xuất thô dữ liệu người dùng. XSS (Cross-Site Scripting — tấn công chèn mã vào trang) được kiểm thử trên tên lưu trữ, form lỗi và query.
-
-CSP (Content Security Policy — chính sách bảo mật nội dung) chặn script, giới hạn nguồn CSS/form, chặn nhúng trang. Form chỉ nhận application/x-www-form-urlencoded, body tối đa 16 KB/20 tham số; sai Content-Type 415, quá lớn 413. Log không ghi body/email/query người dùng.
-
-## 6. Tự động cấp MSSV và JSON
-
-JSON (JavaScript Object Notation — định dạng văn bản có cấu trúc) dùng UTF-8 (Unicode Transformation Format, 8-bit — mã hóa Unicode). Chỉ seed 40 bản ghi nếu file chính chưa tồn tại; không seed lại mảng rỗng, JSON hỏng, model sai hoặc file mất lúc đang chạy.
-
-Cấp MSSV dùng high-water mark — mã số lớn nhất từng được cấp/giữ chỗ — trong `data/students.id-state.json`, ví dụ:
+data/majors.json là mảng{code,name}. data/classes.json là mảng các lớp:
 
 ```json
-{ "version": 1, "highWaterMark": "02600011" }
+{ "code": "24C11", "name": "24C11", "majorCode": "CNTT", "cohort": "24" }
 ```
 
-State lưu chuỗi, tính toán bằng BigInt — kiểu số nguyên chính xác với giá trị lớn — để xử lý cả mã số cũ dài hơn8 chữ số mà không mất độ chính xác. Mã mới vẫn chỉ8 chữ số; max chạm/vượt99999999 thì từ chối thêm409.
+code là mã duy nhất; name là tên hiển thị; majorCode phải thuộc majors.json; cohort là chuỗi hai chữ số, khớp hai ký tự đầu code. Loader đọc UTF-8 một lần khi khởi động, kiểm tra đúng bốn trường, độ dài/kiểu, ký tự điều khiển, mã trùng, ngành/khóa hợp lệ và đóng băng kết quả. Lỗi danh mục làm startup dừng rõ ràng, không tự sửa sinh viên. Thay đổi danh mục cần restart đúng server.
 
-Cấp MSSV nằm trong cùng hàng đợi Promise — đối tượng kết quả bất đồng bộ — với xóa:
+| Ngành | Các lớp sinh hoạt | Khóa/prefix |
+|---|---|---|
+|CNTT — Công nghệ thông tin |24C11,24CNTT,24CNTT1,24CNTT2 |24/024 |
+|KHDL — Khoa học dữ liệu |25KHDL1,25KHDL2 |25/025 |
+|TOAN — Toán học |26TOAN1,26TOAN2 |26/026 |
+|VL — Vật lý |24VL1,24VL2 |24/024 |
 
-1. Validate bốn trường, kiểm tra cặp lớp/ngành.
-2. Đọc danh sách mới nhất và kiểm tra email trùng.
-3. Đọc state hợp lệ; lấy max giữa high-water mark và MSSV thuần số hiện có, chỉ tăng nếu cần.
-4. Cộng 1, pad — thêm số 0 đầu — đến 8 chữ số.
-5. Kiểm tra ứng viên duy nhất; reserve — giữ chỗ — bằng cách ghi state nguyên tử trước.
-6. Sau đó ghi bản ghi đúng năm trường vào students.json; chỉ trả kết quả khi ghi xong.
+Lookup — tìm bản ghi danh mục — bằng code đã chuẩn hóa:
+selectedClass = CATALOG.classes.find(item.code === values.className).
+major = selectedClass.majorCode, prefix = "0" + selectedClass.cohort.
+**Không dò tên ngành trong chuỗi mã lớp**;24C11 vẫn gán đúng CNTT. code thiếu/ngành tham chiếu sai/khóa sai bị từ chối.
 
-Ví dụ: max hiện tại `02600011` → dự kiến `02600012`. Không dùng số lượng bản ghi để cấp mã, không lấp khoảng trống dưới max. Mã có chữ/gạch nối giữ nguyên và không tham gia max số. Nếu không có mã số, bắt đầu 00000001. Chạm/vượt 99999999 thì lỗi 409, không tạo mã chín chữ số hoặc quay lại đầu.
+Form chỉ có name/email/className. Dropdown server render “mã/tên lớp — tên ngành”, optgroup theo ngành. Không có select major hoặc hidden major; bộ lọc GET theo ngành vẫn còn.
 
-Hai POST gần nhau được tuần tự hóa cả đọc/kiểm tra/reserve/thêm/ghi, không đọc chung max cũ hoặc mất bản ghi. Xóa cũng nằm trong hàng đợi này. Xóa không giảm high-water mark, kể cả xóa mã lớn nhất hoặc toàn bộ danh sách. Hàng đợi tiếp tục sau một thao tác lỗi.
+## 4. Validation và an toàn đầu vào
 
-Thứ tự ghi hai file không tạo giao dịch nguyên tử chung, nhưng bảo vệ không dùng lại mã:
+POST chỉ validate ba trường người dùng. Mỗi trường là một chuỗi, không mảng/đối tượng, không ký tự điều khiển, giới hạn độ dài. Class phải có trong JSON. Ngành suy từ lớp; client gửi **id hoặc major đều422**, kể cả giá trị đúng/rỗng/lặp. Store tự validate lại input client trong hàng đợi, không nhận major đã suy qua interface — giao diện gọi — đầu vào.
 
-| Điểm lỗi/ngắt | Kết quả an toàn |
-|---|---|
-| Trước state được ghi thành công | Không ghi sinh viên, chưa có mã reserve bền vững |
-| Sau state, trước/giữa ghi sinh viên | Counter đã tăng; bản ghi có thể chưa có, mã bị bỏ qua |
-| Sau JSON sinh viên, trước303 | Sinh viên đã có, counter đã tăng; không dùng lại mã |
-| Khi ghi JSON xóa thất bại | File cũ còn, không trả303/không báo xóa thành công |
+Tên chuẩn hóa NFC/trim/gộp khoảng trắng. Email dùng cú pháp ASCII (American Standard Code for Information Interchange — bộ mã ký tự cơ bản) thông dụng, giữ phần trước@, tên miền chữ thường. So trùng trên toàn email trim không phân biệt hoa/thường; không giới hạn trường học/xác minh hộp thư/hỗ trợ mọi email quốc tế.
 
-Không rollback — đưa về trạng thái trước — bộ đếm sau lỗi ghi sinh viên. Restart đọc bộ đếm đã lưu, không suy lại chỉ từ danh sách. Process crash — tiến trình bị ngắt — sau reserve được kiểm thử bằng tiến trình Node thật; đây không phải kiểm chứng mất điện vật lý.
+Validation đọc dữ liệu cũ vẫn chấp nhận MSSV4–20 ký tự Latin/số/gạch nối và ngành hợp lệ; không áp quy tắc cohort/quan hệ mới để sửa hoặc từ chối hồ sơ cũ vốn hợp lệ. checkRecords giữ nguyên giá trị hồ sơ khi đọc/ghi lại, chỉ kiểm tra model/trùng.
 
-### Khởi tạo và phát hiện state bị mất
+EJS `<%=` escape — chuyển ký tự HTML nguy hiểm thành văn bản — trên bảng/form/filter/xác nhận. XSS (Cross-Site Scripting — chèn mã vào trang) được kiểm thử. CSP (Content Security Policy — chính sách bảo mật nội dung) chặn script; form chỉ application/x-www-form-urlencoded,16KB/20 tham số; sai Content-Type415/body lớn413. Log không ghi body/email/query.
 
-Lần đầu nâng cấp, khi chưa có state/marker, kiểm tra dữ liệu hiện có rồi tạo `data/students.id-state.json.initialized` với `{ "version": 1 }` trước, dùng cờ tạo mới độc quyền và flush; sau đó ghi state từ max hiện tại. Không đổi student record.
+## 5. Counter theo khóa, migration và lịch sử
 
-Marker — dấu mốc đã khởi tạo — tồn tại bền vững qua restart. Nếu thiếu/hỏng state hoặc marker sau khởi tạo, initialize/add/remove từ chối; không tự tạo lại mã từ danh sách đã bị xóa. Ngắt bootstrap — khởi tạo đầu tiên — giữa marker và state cũng fail closed — dừng an toàn — để không đoán sai lịch sử. File sinh viên bị mất khi metadata còn cũng không được seed lại. GET xác nhận chỉ đọc hồ sơ, không cập nhật counter.
+High-water mark — số thứ tự lớn nhất từng cấp/giữ chỗ — riêng mỗi prefix, cùng file students.id-state.json:
 
-Sao lưu/di chuyển phải mang đủ students.json, state và marker. Phục hồi thủ công không được giảm counter dưới mã lớn nhất từng reserve; bản sao counter cũ có thể không đủ để phục hồi lịch sử. Mất đồng thời cả state và marker không thể phân biệt chắc chắn với dữ liệu legacy chưa nâng cấp: không xóa cả hai, cần backup đáng tin cậy và xử lý thủ công; chương trình không thể khôi phục lịch sử đã mất bằng suy đoán.
+```json
+{
+  "version": 2,
+  "legacyHighWaterMark": "02600011",
+  "counters": { "024": "10010", "025": "00010", "026": "00011" }
+}
+```
 
-Ghi file tạm cùng thư mục với tạo mới độc quyền và flush — đẩy nội dung ghi xuống lưu trữ — rồi rename; không xóa file chính trước. Lỗi ghi/rename giữ file chính và dọn file tạm của thao tác. Không tuyên bố chống mọi sự cố mất điện. Chỉ một tiến trình/store ghi chung một file; rename không thay thế khóa nhiều tiến trình.
+Các sequence là string đúng5 chữ số, prefix đúng0YY. Number đủ chính xác cho0–99999. MSSV mới luôn prefix + String(sequence+1).padStart(5,"0"), string8 chữ số. Không dùng max toàn hệ thống+1.
 
-## 7. Tìm kiếm và lọc bằng GET
+Khởi tạo/chuyển đổi chạy trong hàng đợi trước listen:
 
-HTTP là Hypertext Transfer Protocol — giao thức truyền tải siêu văn bản. Query là tham số URL.
+1. Đọc/kiểm tra students,state,marker; hồ sơ có sẵn mà thiếu cả state/marker thì dừng, không tự bootstrap — khởi tạo — lại.
+2. Nếu statev1/marker1 hợp lệ, giữ nguyên highWaterMark trong legacyHighWaterMark.
+3. Tạo các counter theo cohort danh mục; đối chiếu max suffix các MSSV8 chữ số0YY hiện có, counter đã lưu và max cũ nếu ánh xạ đúng0YYNNNNN.
+4. Bảo toàn mã đã biết02600011 trong KNOWN_RESERVED_IDS:026 ít nhất00011 ngay cả khi statecũ chưa ghi mã này.
+5. Ghi statev2 an toàn; **sau đó** marker lên{version:2}. Không ghi lại students.json.
+6. Restart đọc v2; không giảm counter. Statev2/marker1 có thể hoàn tất bước marker sau gián đoạn; marker2 với statev1 bị từ chối để tránh hạ lịch sử.
 
-| Query | Chính sách |
-|---|---|
-| q | Chuỗi <=100 ký tự, trim/NFC; rỗng bỏ điều kiện tìm |
-| className | Rỗng hoặc mã lớp trong JSON danh mục, <=30 ký tự |
-| major | Rỗng hoặc mã ngành hợp lệ, <=10 ký tự |
-| page | Bỏ qua là 1; một chuỗi số nguyên dương an toàn, không số 0 đầu |
+State thiếu/hỏng/sai schema, marker thiếu/hỏng, file sinh viên mất khi metadata còn đều dừng an toàn. Runtime không migrate statev1; chỉ initialize hợp lệ được chuyển. Mất cả state/marker trên kho có hồ sơ bị từ chối. Kho hoàn toàn mới không có dữ liệu/metadata được seed40 và ghi marker1 trước state2 rồi marker2; ngắt trước state thì fail closed — dừng an toàn.
 
-Query lặp, bracket dạng page[x]/q[], sai kiểu, ký tự điều khiển hoặc quá dài trả HTML 400. Không bỏ qua input bất thường rồi coi là danh sách đầy đủ.
+legacyHighWaterMark không bị thay bằng một max nhỏ hơn, counters chỉ tăng. MSSV cũ không đúng0YYNNNNN được giữ nguyên, không pad hoặc đổi mã; max cũ không ánh xạ được vẫn giữ literal — giá trị chuỗi nguyên gốc — chứ không giả lập lịch sử theo khóa.
 
-Tìm kiếm dùng Unicode NFD (Normalization Form D — dạng tách dấu), bỏ dấu kết hợp, đổi đ/Đ thành d, chữ thường và gộp khoảng trắng. Chỉ chuẩn hóa bản sao khi so sánh, không sửa tên/MSSV trong JSON.
+### Giới hạn lịch sử cũ
+
+Statev1 chỉ ghi một max toàn hệ thống, không có ledger — nhật ký đầy đủ — mã đã xóa. Dữ liệu còn lại/max cũ/02600011 là các nguồn đã biết được bảo toàn. **Không thể khôi phục mọi mã đã xóa mà chưa từng được lưu**; không tuyên bố bảo vệ lịch sử không có nguồn tin cậy. Nếu có lịch sử bổ sung, cần nâng counters tương ứng khi server dừng, không hạ chúng. Không chỉnh tay/khôi phục counter từ bản sao cũ chỉ vì danh sách hiện tại có max thấp hơn.
+
+## 6. Luồng thêm/xóa và ghi an toàn
+
+Thêm/xóa/initialize dùng chung hàng đợi Promise — kết quả bất đồng bộ — một tiến trình:
+
+```text
+POST /students
+ → validate3 trường, cấmid/major
+ → hàng đợi: validate lại, đọc sinh viên mới nhất, so email trùng
+ → đọc/reconcile counters, tìm class.majorCode và cohort
+ → kiểm tra suffix <99999, tạo id0YYNNNNN và so trùng toàn kho
+ → reserve: ghi state counter mới trước
+ → thêm model đúng5 trường, ghi JSON sinh viên
+ → trảstudent sau khi lưu xong
+ →303 tới trang cóstudent →GET200
+```
+
+Hai POST cùng khóa không dùng chung suffix cũ; khác khóa có counters độc lập nhưng vẫn chung hàng đợi để không mất hồ sơ. Lỗi ghi counter không ghi sinh viên. Lỗi/ngắt sau reserve không rollback — giảm lại — counter: chấp nhận bỏ qua mã. Khi một khóa đạt99999, trả409/giữ form; các khóa khác vẫn hoạt động.
+
+GET /students/:id/delete chỉ đọc/xác nhận năm trường, không reserve/ghi. Hủy GET về danh sách. POST xóa validate MSSV URL, tìm đúng một hồ sơ, kiểm tra/reconcile counters trước xóa và ghi mảng bỏ một bản ghi. Không nhận index bảng/ID body để xóa nhiều hồ sơ. Xóa không giảm counters kể cả max/toàn kho. Sau lưu303 /students?deleted=1 về trang1; refresh không xóa thêm. Không tồn tại404/ID sai400.
+
+writeAtomically ghi file tạm cùng thư mục, flagwx tạo mới độc quyền, flush — đẩy nội dung ghi xuống lưu trữ — rồi rename; lỗi giữ file chính và dọn file tạm của thao tác. JSON (JavaScript Object Notation — định dạng văn bản có cấu trúc) dùng UTF-8 (Unicode Transformation Format,8-bit — mã hóa Unicode). Không có giao dịch nguyên tử chung cho state/students; thứ tự reserve trước chống dùng lại mã khi tiến trình ngắt. Không tuyên bố chống mọi sự cố mất điện/ổ đĩa.
+
+PRG (Post/Redirect/Get — POST, chuyển hướng, GET) dùng303 See Other. Refresh chỉ GET. created/deleted là cờ giao diện, không phải bằng chứng độc lập đã ghi/xóa; created chỉ hiển thị nếu mã8 chữ số có thật trong kho.
+
+## 7. Search/Filter/Pagination SSR
+
+GET đọc toàn bộ JSON, validate query rồi lọc trước/chia trang sau:
 
 ```text
 (q rỗng OR tên chứa q OR MSSV chứa q)
-AND (className rỗng OR lớp trùng)
+AND (className rỗng OR lớp sinh hoạt trùng)
 AND (major rỗng OR ngành trùng)
 ```
 
-OR là hoặc; AND là và. Bộ lọc lớp/ngành so chính xác. Không tìm theo email. Các danh mục select không bị thu hẹp theo tập kết quả.
+OR là hoặc, AND là và. Tìm tên/MSSV, không email; NFD (Normalization Form D — dạng tách dấu), bỏ dấu, đ→d, chữ thường/trim/gộp khoảng trắng trên bản sao so sánh, không đổi JSON. q<=100, className<=30 thuộc catalog, major<=10 thuộc majors. Query lặp/bracket/sai kiểu/control/quá dài trả400.
 
-Form GET giữ điều kiện đã nhập/chọn. Xóa q giữ lớp/ngành nhưng không giữ page; reset về /students. Lớp và ngành không cùng quan hệ trong form lọc vẫn là hai điều kiện AND hợp lệ và có thể không có kết quả, khác validation form tạo.
+PAGE_SIZE20; totalPages=max(1,ceil(resultCount/20)); page=min(requestedPage,totalPages); offset=(page-1)*20; slice(offset,offset+20). Giữ thứ tự mảng. Cùng tập dữ liệu không đổi không bỏ sót/lặp khi chuyển trang.40→20/20; fixture42→20/20/2; kết quả rỗng trang1/1.
 
-## 8. Phân trang phía server
+page thiếu là1, sai0/âm/thập phân/chữ/lặp/số không an toàn trả400; vượt giới hạn giới hạn về trang cuối. URLSearchParams encode — mã hóa URL — giữq/className/major. Form tìm/lọc không có page nên điều kiện mới về1; reset về /students. Không viết JSON qua GET. Filter vẫn có ngành dù formCreate không có selectmajor.
 
-PAGE_SIZE = 20. Trình tự bắt buộc: đọc toàn bộ → tìm/lọc → resultCount → totalPages → giới hạn page → slice.
+## 8. Popup/UI và xử lý lỗi
 
-```text
-totalPages = max(1, ceil(resultCount / 20))
-page = min(requestedPage, totalPages)
-offset = (page - 1) * 20
-students = matches.slice(offset, offset + 20)
-```
+Bảng toàn chiều ngang container, sáu cột MSSV/tên/email/lớp sinh hoạt/ngành/thao tác. table-layout fixed/overflow-wrap giữ tên/email dài; bảng cuộn ngang riêng trên mobile. Semantic HTML — đánh dấu đúng ý nghĩa — label/caption/heading/skip link và focus rõ.
 
-Giữ thứ tự mảng JSON, không sort ngẫu nhiên. Với một tập không thay đổi, các slice liên tiếp không bỏ sót/lặp bản ghi. totalCount là tổng kho, resultCount là số sau lọc, students.length là số trên trang. Giao diện không lấy students.length làm tổng kết quả.
+Popup dùng declarative HTML Popover API — cơ chế cửa sổ nổi khai báo bằng HTML — popoverauto/popovertarget/show/hide. X/Hủy typebutton không submit; Esc/Enter/Tab hỗ trợ bởi trình duyệt. Lớp sinh hoạt chiếm cả hàng trong form. Không có JS client.
 
-42 bản ghi → 20/20/2, phạm vi 1–20, 21–40, 41–42. Bộ lọc có 7 kết quả → một trang 7 dòng. Tổng hoặc kết quả rỗng → trang 1/1, start/end = 0, không có Previous/Next link.
+POST422/409: hasFormErrors trong EJS bỏ thuộc tính popover, hiện form trực tiếp phía trên bảng, giữ tên/email/lớp hợp lệ và autofocus — tự nhận focus — trường lỗi đầu. Hủy/Đóng về GET /students. GET sau303 quay lại popup đóng. Template vẫn nhận đủ locals — biến render — cho GET/POST lỗi, không gây500 vì thiếu totalCount/catalogClasses/pagination.
 
-page sai (0, âm, thập phân, chữ, khoảng trắng, số không an toàn, nhiều giá trị) trả 400. Số hợp lệ vượt trang cuối được clamp — giới hạn — về trang cuối, HTML hiển thị đúng trang thực tế; không ghi JSON.
+Popover non-modal — không khóa tương tác/focus toàn trang — không đặt aria-modal=true. CSS fallback — dự phòng — form trực tiếp nếu không hỗ trợ; chưa thử trực tiếp trình duyệt cũ/trình đọc màn hình.
 
-URLSearchParams xây liên kết đã encode, giữ q/className/major và thêm page. Nút trang render cửa sổ tối đa bảy số với dấu … nếu cần, không tạo hàng trăm nút. Trang hiện tại có aria-current=page; Trước/Sau vô hiệu là span, không là link lỗi.
+## 9. Routes, lỗi và vận hành
 
-Form tìm/lọc không có trường page, vì vậy áp dụng điều kiện mới luôn bắt đầu trang 1. Ví dụ q=nguyen&className=24CNTT1&major=CNTT&page=2 chỉ tới trang 2 khi thật sự đủ kết quả.
-
-## 9. PRG, route và lỗi
-
-PRG (Post/Redirect/Get — gửi POST, chuyển hướng, tải lại bằng GET) dùng HTTP 303 See Other — xem tài nguyên khác.
-
-Sau lưu, route đọc danh sách và tìm vị trí hồ sơ vừa thêm để redirect đến đúng trang. Ví dụ kiểm thử bản sao dữ liệu:
-
-```text
-POST /students → JSON từ 42 thành 43
-303 Location: /students?created=02600012&page=3
-GET đích → 200, trang 3 có hồ sơ mới
-Refresh → GET, vẫn 43 bản ghi
-```
-
-| Request/tình huống | Response |
+| Tình huống | HTTP |
 |---|---|
-| GET danh sách/tìm/lọc/phân trang hợp lệ | 200, HTML chứa các hàng |
-| GET /students/:id/delete hợp lệ | 200, trang xác nhận; không ghi |
-| POST /students/:id/delete lưu thành công | 303 /students?deleted=1 rồi GET200 |
-| Xóa: ID không tồn tại / ID URL sai | 404 / 400, không ghi |
-| Query không hợp lệ | 400, HTML lỗi |
-| POST thiếu/sai dữ liệu, lớp/ngành sai, email trùng, client gửi id | 422, giữ form và lỗi cụ thể |
-| Hết phạm vi MSSV | 409, giữ form, không ghi |
-| POST lưu thành công | 303 rồi GET 200 |
-| Body lớn / Content-Type sai | 413 / 415 |
-| JSON hỏng hoặc lỗi đọc/ghi | 500, thông báo an toàn, không lộ stack trace |
-| URL không có | 404 |
+|GET danh sách/tìm/lọc/phân trang/xác nhận hợp lệ |200HTML |
+|POST thêm/xóa lưu xong |303→GET200 |
+|Thiếu/sai tên/email/lớp; emailtrùng; clientid/major |422, form giữ giá trị |
+|Hết suffix của khóa |409, form hiện lỗi |
+|Query/IDURL sai |400 |
+|IDxóa không tồn tại hoặc URL không có |404 |
+|Body lớn/Content-Type sai |413/415 |
+|JSON/state/ghi file lỗi |500 an toàn, không báo thành công |
 
-created là cờ giao diện, chỉ hiển thị mã 8 chữ số thực sự tồn tại; không phải bằng chứng độc lập một giao dịch. Thông báo có thể còn khi refresh URL thành công.
+Sao lưu trước nâng cấp tại data/backups/before-cohort-20261009113740363/:40 hồ sơ, state1,marker1,danh mục và seed. Main40/seed/majors giữ từng byte, danh mục được mở rộng giữ mã/ngành cũ; state/marker được migrate có chủ đích. Không phát hiện hồ sơ cũ lệch ngành/khóa; nếu có chỉ báo cáo, không tự sửa.
 
-### Xóa sinh viên bằng SSR
+Di chuyển/nộp phải mang students,state,marker vì thuộc .gitignore. Phục hồi cần lịch sử tin cậy và không giảm bất kỳ counter nào; không nạp backupv1 sau khi đã cấp thêm theo v2. Chỉ một tiến trình ghi. Restart đúng server sau thay đổi danh mục/backend; không kill ngoài project.
 
-Nút Xóa là liên kết GET tới `/students/:id/delete`, xuất hiện trên mọi hàng đã render kể cả khi tìm/lọc/phân trang. GET kiểm tra ID Latin/số/gạch nối4–20 ký tự, tìm theo mã chuẩn hóa để tương thích legacy, render đúng năm trường và cảnh báo “Bạn có chắc chắn muốn xóa sinh viên này? Hành động này không thể hoàn tác.” GET không thay đổi JSON/state; Hủy là liên kết GET về danh sách.
+## 10. Kiểm chứng và hạn chế
 
-POST cùng URL gọi store.remove: đọc danh sách mới nhất, tìm đúng một mã URL, kiểm tra trạng thái cấp mã, giữ high-water mark, ghi mảng bỏ đúng một vị trí đã tìm. Index chỉ là vị trí tìm được trong dữ liệu server, không nhận index hoặc ID khác từ body/bảng. ID không tồn tại404, URL sai400; body gửi thêm ID không gây xóa nhiều bản ghi.
+**81/81 test tự động đạt,0fail/0skip;9/9 nhóm Chrome đạt với JavaScript tắt**.70 kịch bản cũ giữ lại, cập nhật assertion — điều kiện kiểm tra — theo3 trường input/counter từngkhóa; thêm11 testCohort. Mọi POST dùng kho tạm; browser dùng bản sao40 cùng state/marker, không reset/ghi main.
 
-Sau lưu trả303 `/students?deleted=1`, GET render trang1 với tổng/phân trang tính lại. Refresh không xóa thêm; POST lặp cùng mã đã xóa404. Truy cập page cũ vượt giới hạn được giới hạn về trang cuối như trước. deleted là cờ thông báo, không phải bằng chứng một giao dịch. Tên/email/lớp/ngành trong trang xác nhận và aria-label nút được EJS escape; đường dẫn file luôn là cấu hình cố định, không ghép ID URL vào đường dẫn file.
+Bao gồm mọi lớp, ngành từJSON/24C11, chungkhóa/kháckhóa, HTTPđồng thời, migrationfloor02611, maxv2khônggiảm, mới27, cap99999, giảmạoid/major, statehỏng/mất/downgradev1, lỗi giữa các bướcmigration, mấtcảmetadata. Các testcũ vẫn kiểm tra restart/crashthật, xóa, ghi lỗi,Unicode/XSS/SSR/query/page/PRG.
 
-Không dùng method-override, confirm(), modal hoặc JavaScript client. Trang xác nhận ngăn thao tác vô ý nhưng **không phải xác thực hoặc phân quyền**. Website chỉ demo localhost, không public Internet.
+Chrome154 desktop1440×1000/mobile390×844/320×640: popup3trường, keyboard,422giữform, năm POST đúngprefix/major, xóa26/khởi tạolạistore/cấptiếp02600013, Search/Filter/Pagination, ViewSource, main40khôngđổi. Browserkhởi tạolạistore không đồng nghĩa restarttiếntrình; testtự động mới là bằngchứng restart/crash Node thực tế.
 
-## 10. Giao diện, kiểm thử và vận hành
+Bằng chứng hiện tại [EVIDENCE.md](EVIDENCE.md), artifacts trong evidence/cohort/. Popup/delete/final/upgrade là lịch sử, không chỉnh ảnh/log cũ thành trạng thái mới.
 
-Dashboard học vụ giữ bảng rộng bên trái/form bên phải, xếp dọc trên mobile. Search/Filter và Pagination cùng màu, khoảng cách, focus. Bảng cuộn ngang riêng, không làm tràn trang. Label, heading, caption, skip link — liên kết bỏ qua tới nội dung chính — và thông báo lỗi hỗ trợ accessibility — khả năng tiếp cận. Chưa chứng nhận toàn diện theo chuẩn tiếp cận hoặc trình đọc màn hình.
-
-**65 test tự động đạt, 0 lỗi/bỏ qua; 10 nhóm Chrome phiên bản xóa đạt khi JavaScript tắt**. Giữ49 test trước, điều chỉnh assertion cột thao tác/metadata và khởi tạo state; bổ sung16 test xác nhận/xóa/không dùng lại mã/ghi lỗi/crash/restart. Test dùng kho tạm. Chrome dùng bản sao42: xóa02600011 thành41, thêm02600012 thành42, thêm mẫu escape thành43; file thật vẫn42, seed40 và counter02600011 không đổi. Bằng chứng mới tại `docs/evidence/delete/`; `final/` và `upgrade/` là lịch sử.
-
-Lỗi 500 lịch sử do Node giữ route cũ, template mới đòi totalCount. Phòng lặp lại: renderPage chung cung cấp đủ biến, test GET/POST lỗi/empty/query/page, dùng dev khi sửa và restart đúng server nếu chạy start. Không kill tiến trình ngoài project, không reset JSON để chữa lỗi template.
-
-Giới hạn: một tiến trình ghi, chưa thử Firefox/Safari/thiết bị vật lý/trình đọc màn hình/mất điện. Không can thiệp trực tiếp hoặc phục hồi counter cũ thấp hơn lịch sử. Không có xác thực/phân quyền hoặc cơ chế CSRF (Cross-Site Request Forgery — chống giả mạo yêu cầu từ website khác) chuyên biệt. Chỉ phục vụ học tập localhost; không coi chức năng xóa là an toàn để public Internet.
-
-Xem [EVIDENCE.md](EVIDENCE.md) để đối chiếu từng yêu cầu và artifact thực tế.
+Giới hạn: một tiến trình ghi, chưa thử Firefox/Safari/thiết bị vật lý/trình đọc màn hình/mất điện. Không biết đầy đủ lịch sử từngkhóa đã xóa trướcv2; bảo toàn nguồn đã biết, không tự đoán. Chưa có xác thực/phân quyền hoặc CSRF (Cross-Site Request Forgery — chống giả mạo yêu cầu từ website khác) chuyên biệt; **chỉ localhost, không public Internet**. MSSV0YYNNNNN là mô phỏng học tập,không chuẩn cấp mã chính thức hoặc giải quyết trùng năm sau100năm.

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+  <% const hasFormErrors = Object.keys(errors).length > 0; %>
   <a class="skip-link" href="#main-content">Đến nội dung chính</a>
   <header class="site-header">
     <div class="header-inner">
@@ -55,11 +56,21 @@
       </section>
     <% } %>
 
+    <%- include('partials/student-form', { hasFormErrors }) %>
+
     <div class="workspace-grid">
       <section class="panel roster-panel" aria-labelledby="roster-title">
         <div class="panel-heading">
           <div><h2 id="roster-title">Hồ sơ sinh viên</h2><p>Danh sách thông tin đang được lưu trong hệ thống.</p></div>
-          <span class="count-badge"><%= resultCount %> / <%= totalCount %> hồ sơ</span>
+          <div class="roster-heading-actions">
+            <span class="count-badge"><%= resultCount %> / <%= totalCount %> hồ sơ</span>
+            <% if (hasFormErrors) { %>
+              <a class="submit-button add-student-button" href="#create-student">+ Thêm sinh viên</a>
+            <% } else { %>
+              <button class="submit-button add-student-button native-popover-control" type="button" popovertarget="create-student" popovertargetaction="show">+ Thêm sinh viên</button>
+              <a class="submit-button add-student-button popover-fallback-control" href="#create-student">+ Thêm sinh viên</a>
+            <% } %>
+          </div>
         </div>
         <section class="search-section" aria-labelledby="search-title">
           <h3 id="search-title">Tìm kiếm &amp; lọc</h3>
@@ -69,9 +80,9 @@
               <input id="search-q" name="q" type="search" value="<%= filters.q %>" maxlength="100" placeholder="Ví dụ: Nguyen hoặc 026000" autocomplete="off">
             </div>
             <div>
-              <label for="filter-class">Lớp</label>
+              <label for="filter-class">Lớp sinh hoạt</label>
               <select id="filter-class" name="className">
-                <option value="">Tất cả lớp</option>
+                <option value="">Tất cả lớp sinh hoạt</option>
                 <% for (const className of classes) { %>
                   <option value="<%= className %>"<% if (filters.className === className) { %> selected<% } %>><%= className %></option>
                 <% } %>
@@ -95,7 +106,7 @@
             <div class="active-filters" aria-label="Điều kiện đang áp dụng">
               <span class="filter-label">Đang áp dụng:</span>
               <% if (filters.q) { %><span class="filter-chip">Từ khóa: <%= filters.q %></span><% } %>
-              <% if (filters.className) { %><span class="filter-chip">Lớp: <%= filters.className %></span><% } %>
+              <% if (filters.className) { %><span class="filter-chip">Lớp sinh hoạt: <%= filters.className %></span><% } %>
               <% if (filters.major) { %><span class="filter-chip">Ngành: <%= majors[filters.major] %></span><% } %>
               <% if (filters.q) { %><a class="text-link clear-search" href="<%= clearSearchUrl %>">Xóa tìm kiếm</a><% } %>
             </div>
@@ -107,7 +118,7 @@
             <span class="empty-symbol" aria-hidden="true">∅</span>
             <h3>Chưa có sinh viên</h3>
             <p>Hãy dùng biểu mẫu để thêm sinh viên đầu tiên.</p>
-            <a class="text-link" href="#create-student">Đến biểu mẫu thêm sinh viên →</a>
+            <p>Nhấn “+ Thêm sinh viên” phía trên để mở biểu mẫu.</p>
           </div>
         <% } else if (students.length === 0) { %>
           <div class="empty-state">
@@ -119,8 +130,9 @@
         <% } else { %>
           <div class="table-scroll" tabindex="0" role="region" aria-label="Bảng sinh viên, có thể cuộn ngang trên màn hình nhỏ">
             <table>
-              <caption class="visually-hidden">Danh sách <%= students.length %> sinh viên gồm MSSV, họ tên, email, lớp, ngành học và thao tác.</caption>
-              <thead><tr><th scope="col">MSSV</th><th scope="col">Họ và tên</th><th scope="col">Email</th><th scope="col">Lớp</th><th scope="col">Ngành học</th><th scope="col">Thao tác</th></tr></thead>
+              <caption class="visually-hidden">Danh sách <%= students.length %> sinh viên gồm MSSV, họ tên, email, lớp sinh hoạt, ngành học và thao tác.</caption>
+              <colgroup><col class="col-id"><col class="col-name"><col class="col-email"><col class="col-class"><col class="col-major"><col class="col-actions"></colgroup>
+              <thead><tr><th scope="col">MSSV</th><th scope="col">Họ và tên</th><th scope="col">Email</th><th scope="col">Lớp sinh hoạt</th><th scope="col">Ngành học</th><th scope="col">Thao tác</th></tr></thead>
               <tbody>
                 <% for (const student of students) { %>
                   <tr>
@@ -162,50 +174,6 @@
         </nav>
       </section>
 
-      <section id="create-student" class="panel create-panel" aria-labelledby="create-title">
-        <div class="form-heading"><span class="form-symbol" aria-hidden="true">+</span><h2 id="create-title">Thêm sinh viên</h2><p>Điền thông tin để tạo hồ sơ mới.</p></div>
-        <form class="create-form" action="/students" method="post" novalidate>
-          <p class="required-note">Các trường có <span aria-hidden="true">*</span> đều bắt buộc.</p>
-          <p class="auto-id-note">MSSV sẽ được hệ thống tự động cấp.</p>
-          <div class="form-field">
-            <label for="name">Họ và tên <span aria-hidden="true">*</span></label>
-            <input id="name" name="name" type="text" value="<%= values.name %>" maxlength="100" required autocomplete="name"<% if (errors.name) { %> aria-invalid="true" aria-describedby="name-error"<% } %> placeholder="Ví dụ: Nguyễn Minh Anh">
-            <% if (errors.name) { %><p id="name-error" class="field-error"><%= errors.name %></p><% } %>
-          </div>
-          <div class="form-field">
-            <label for="email">Email <span aria-hidden="true">*</span></label>
-            <input id="email" name="email" type="email" value="<%= values.email %>" maxlength="254" required autocomplete="email" spellcheck="false"<% if (errors.email) { %> aria-invalid="true" aria-describedby="email-error"<% } %> placeholder="sinhvien@example.com">
-            <% if (errors.email) { %><p id="email-error" class="field-error"><%= errors.email %></p><% } %>
-          </div>
-          <div class="form-field">
-            <label for="major">Ngành học <span aria-hidden="true">*</span></label>
-            <select id="major" name="major" required<% if (errors.major) { %> aria-invalid="true" aria-describedby="major-error"<% } %>>
-              <option value="">Chọn ngành học</option>
-              <% for (const [code, label] of Object.entries(majors)) { %>
-                <option value="<%= code %>"<% if (values.major === code) { %> selected<% } %>><%= label %></option>
-              <% } %>
-            </select>
-            <% if (errors.major) { %><p id="major-error" class="field-error"><%= errors.major %></p><% } %>
-          </div>
-          <div class="form-field">
-            <label for="className">Lớp <span aria-hidden="true">*</span></label>
-            <select id="className" name="className" required aria-describedby="className-hint<% if (errors.className) { %> className-error<% } %>"<% if (errors.className) { %> aria-invalid="true"<% } %>>
-              <option value="">Chọn lớp học</option>
-              <% for (const [code, label] of Object.entries(majors)) { %>
-                <optgroup label="<%= label %>">
-                  <% for (const item of catalogClasses.filter((entry) => entry.major === code)) { %>
-                    <option value="<%= item.code %>"<% if (values.className === item.code) { %> selected<% } %>><%= item.code %></option>
-                  <% } %>
-                </optgroup>
-              <% } %>
-            </select>
-            <p id="className-hint" class="field-hint">Chọn lớp trong nhóm ngành tương ứng. Hệ thống kiểm tra khi gửi form.</p>
-            <% if (errors.className) { %><p id="className-error" class="field-error"><%= errors.className %></p><% } %>
-          </div>
-          <button class="submit-button" type="submit"><span aria-hidden="true">+</span> Thêm sinh viên</button>
-          <p class="form-footnote">Email phải khác với các hồ sơ đã có.</p>
-        </form>
-      </section>
     </div>
     <footer class="page-footer">Quản lý học vụ <span>Danh sách &amp; hồ sơ sinh viên</span></footer>
   </main>

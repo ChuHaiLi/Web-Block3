@@ -1,0 +1,49 @@
+{
+  "verifiedAt": "2026-10-09T11:07:51.784Z",
+  "count": 40,
+  "filesUnchanged": {
+    "students.json": true,
+    "students.seed.json": true,
+    "students.id-state.json": true,
+    "students.id-state.json.initialized": true
+  },
+  "documentLinksChecked": 45,
+  "checks": [
+    {
+      "url": "/students",
+      "status": 200,
+      "rows": 20,
+      "popup": true
+    },
+    {
+      "url": "/students?page=2",
+      "status": 200,
+      "rows": 20,
+      "popup": true
+    },
+    {
+      "url": "/students?page=3",
+      "status": 200,
+      "rows": 20,
+      "popup": true
+    },
+    {
+      "url": "/students?q=nguyen&className=24CNTT1&major=CNTT",
+      "status": 200,
+      "rows": 1,
+      "popup": true
+    },
+    {
+      "url": "/students/02400001/delete",
+      "status": 200,
+      "rows": 0,
+      "popup": false
+    },
+    {
+      "url": "/students?page=0",
+      "status": 400,
+      "rows": 0,
+      "popup": false
+    }
+  ]
+}

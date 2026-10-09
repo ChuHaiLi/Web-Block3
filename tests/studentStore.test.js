@@ -8,8 +8,8 @@ const os = require('node:os');
 const { createStudentStore, StorageError, StudentConflictError, StudentIdExhaustedError } = require('../services/studentStore');
 
 const seedPath = path.join(__dirname, '../data/students.seed.json');
-const student = { name: 'Đặng Mỹ Duyên', email: 'store-test@example.com', className: '24CNTT1', major: 'CNTT' };
-const record = { id: '09999901', ...student };
+const student = { name: 'Đặng Mỹ Duyên', email: 'store-test@example.com', className: '24CNTT1' };
+const record = { id: '09999901', ...student, major: 'CNTT' };
 
 async function fixture(t, fileSystem = fs) {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'student-store-test-'));
@@ -70,7 +70,7 @@ test('Hai thao tác gần nhau cấp ID khác nhau; email trùng chỉ lưu mộ
   const { store } = await fixture(t);
   await store.initialize();
   const added = await Promise.all([store.add(student), store.add({ ...student, email: 'second@example.com' })]);
-  assert.deepEqual(added.map((x) => x.id), ['02600011', '02600012']);
+  assert.deepEqual(added.map((x) => x.id), ['02410011', '02410012']);
   assert.equal((await store.getAll()).length, 42);
   const results = await Promise.allSettled([
     store.add({ ...student, email: 'third@example.com' }),
@@ -131,14 +131,14 @@ test('File bị mất lúc chạy phải báo lỗi, không tự seed lại', as
   await assert.rejects(fs.readFile(filePath), { code: 'ENOENT' });
 });
 
-test('Hai lần thêm liên tiếp lấy max+1, giữ tám chữ số và toàn bộ bản ghi cũ', async (t) => {
+test('Hai lần thêm liên tiếp lấy max theo khóa+1, giữ tám chữ số và bản ghi cũ', async (t) => {
   const { store } = await fixture(t);
   await store.initialize();
   const before = await store.getAll();
   const first = await store.add(student);
   const second = await store.add({ ...student, email: 'next@example.com' });
-  assert.equal(first.id, '02600011');
-  assert.equal(second.id, '02600012');
+  assert.equal(first.id, '02410011');
+  assert.equal(second.id, '02410012');
   assert.match(first.id, /^[0-9]{8}$/);
   assert.match(second.id, /^[0-9]{8}$/);
   assert.deepEqual((await store.getAll()).slice(0, 40), before);
@@ -146,6 +146,7 @@ test('Hai lần thêm liên tiếp lấy max+1, giữ tám chữ số và toàn 
 
 test('MSSV cũ không đồng nhất được giữ nguyên; không dùng lại lỗ trống dưới max', async (t) => {
   const { store, filePath } = await fixture(t);
+  await store.initialize();
   const legacy = [
     { ...record, id: '2222' },
     { ...record, id: 'sv-0001', email: 'legacy-letter@example.com', name: '  Nguyễn   An  ' },
@@ -154,29 +155,34 @@ test('MSSV cũ không đồng nhất được giữ nguyên; không dùng lại 
   await fs.writeFile(filePath, JSON.stringify(legacy), 'utf8');
   await store.initialize();
   const added = await store.add({ ...student, email: 'fresh@example.com' });
-  assert.equal(added.id, '00002223');
+  assert.equal(added.id, '02410011');
   assert.deepEqual((await store.getAll()).slice(0, 3), legacy);
 });
 
-test('Mảng rỗng cấp 00000001; hết phạm vi trả lỗi và file giữ nguyên', async (t) => {
+test('Mảng rỗng cấp02400001; hết phạm vi khóa24 trả lỗi và giữ file', async (t) => {
   const { store, filePath } = await fixture(t);
+  await store.initialize();
+  // Kho rỗng mới tạo có metadata hợp lệ, không phải kho mất lịch sử.
+  const statePath = path.join(path.dirname(filePath), 'students.id-state.json');
+  await fs.writeFile(statePath, JSON.stringify({ version: 2, legacyHighWaterMark: '00000000', counters: { '024': '00000', '025': '00000', '026': '00011' } }));
   await fs.writeFile(filePath, '[]', 'utf8');
   await store.initialize();
-  assert.equal((await store.add(student)).id, '00000001');
-  await fs.writeFile(filePath, JSON.stringify([{ ...record, id: '99999998' }]), 'utf8');
-  assert.equal((await store.add({ ...student, email: 'last@example.com' })).id, '99999999');
+  assert.equal((await store.add(student)).id, '02400001');
+  await fs.writeFile(filePath, JSON.stringify([{ ...record, id: '02499998' }]), 'utf8');
+  assert.equal((await store.add({ ...student, email: 'last@example.com' })).id, '02499999');
   const before = await fs.readFile(filePath, 'utf8');
   await assert.rejects(store.add({ ...student, email: 'overflow@example.com' }), StudentIdExhaustedError);
   assert.equal(await fs.readFile(filePath, 'utf8'), before);
 });
 
-test('MSSV số cũ lớn hơn phạm vi không bị đổi và không gây cấp lại mã nhỏ hơn', async (t) => {
+test('MSSV số cũ ngoài định dạng được giữ nguyên, không tham gia bộ đếm khóa', async (t) => {
   const { store, filePath } = await fixture(t);
+  await store.initialize();
   const before = JSON.stringify([{ ...record, id: '100000000' }]);
   await fs.writeFile(filePath, before, 'utf8');
   await store.initialize();
-  await assert.rejects(store.add({ ...student, email: 'fresh@example.com' }), StudentIdExhaustedError);
-  assert.equal(await fs.readFile(filePath, 'utf8'), before);
+  assert.equal((await store.add({ ...student, email: 'fresh@example.com' })).id, '02410011');
+  assert.deepEqual((await store.getAll()).slice(0, 1), JSON.parse(before));
 });
 
 test('Gọi store trực tiếp vẫn kiểm tra danh mục và quan hệ lớp/ngành trong hàng đợi', async (t) => {
@@ -187,5 +193,5 @@ test('Gọi store trực tiếp vẫn kiểm tra danh mục và quan hệ lớp/
     await assert.rejects(store.add(input), StudentConflictError);
     assert.equal(await fs.readFile(filePath, 'utf8'), before);
   }
-  assert.equal((await store.add({ ...student, className: '24C11' })).id, '02600011');
+  assert.equal((await store.add({ ...student, className: '24C11' })).id, '02410011');
 });

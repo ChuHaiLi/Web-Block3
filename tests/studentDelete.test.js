@@ -12,7 +12,7 @@ const { createApp } = require('../app');
 const { createStudentStore, StudentNotFoundError, StorageError } = require('../services/studentStore');
 
 const seedPath = path.join(__dirname, '../data/students.seed.json');
-const input = { name: 'Nguyễn Kiểm Thử', email: 'delete-test@example.com', className: '24C11', major: 'CNTT' };
+const input = { name: 'Nguyễn Kiểm Thử', email: 'delete-test@example.com', className: '26TOAN1' };
 
 async function fixture(t, fileSystem = fs, { initialize = true } = {}) {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'student-delete-test-'));
@@ -118,7 +118,7 @@ test('Tên HTML nguy hiểm được escape trong trang xác nhận và nút dan
 test('Nút Xóa xuất hiện khi tìm/lọc/phân trang; xóa cuối trang cuối tính lại về trang có dữ liệu', async (t) => {
   const { store, base } = await fixture(t);
   const added = await store.add(input);
-  const filtered = await request(base, `/students?q=${added.id}&className=24C11&major=CNTT`);
+  const filtered = await request(base, `/students?q=${added.id}&className=26TOAN1&major=TOAN`);
   assert.match(filtered.html, new RegExp(`href="/students/${added.id}/delete"`));
   assert.match((await request(base, '/students?page=3')).html, new RegExp(`href="/students/${added.id}/delete"`));
   assert.equal((await request(base, `/students/${added.id}/delete`, 'POST')).status, 303);
@@ -137,17 +137,17 @@ test('Xóa max, restart store, thêm tiếp không dùng lại mã đã xóa; x�
   const restarted = createStudentStore({ filePath, seedPath });
   await restarted.initialize();
   const first = await restarted.add(input);
-  assert.equal(first.id, '02600011');
+  assert.equal(first.id, '02600012');
   await restarted.remove(first.id);
   const nextStore = createStudentStore({ filePath, seedPath });
   await nextStore.initialize();
-  assert.equal((await nextStore.add({ ...input, email: 'next-delete@example.com' })).id, '02600012');
+  assert.equal((await nextStore.add({ ...input, email: 'next-delete@example.com' })).id, '02600013');
   for (const student of await nextStore.getAll()) await nextStore.remove(student.id);
   const emptyRestart = createStudentStore({ filePath, seedPath });
   await emptyRestart.initialize();
   assert.deepEqual(await emptyRestart.getAll(), []);
-  assert.equal(JSON.parse(await fs.readFile(statePath, 'utf8')).highWaterMark, '02600012');
-  assert.equal((await emptyRestart.add({ ...input, email: 'after-empty@example.com' })).id, '02600013');
+  assert.equal(JSON.parse(await fs.readFile(statePath, 'utf8')).counters['026'], '00013');
+  assert.equal((await emptyRestart.add({ ...input, email: 'after-empty@example.com' })).id, '02600014');
 });
 
 test('Xóa/thêm đồng thời cùng hàng đợi: giữ mọi hồ sơ khác và MSSV duy nhất', async (t) => {
@@ -157,7 +157,7 @@ test('Xóa/thêm đồng thời cùng hàng đợi: giữ mọi hồ sơ khác v
     store.remove('02600010'), store.add(input), store.add({ ...input, email: 'concurrent-delete@example.com' }),
   ]);
   assert.equal(removed.id, '02600010');
-  assert.deepEqual([first.id, second.id], ['02600011', '02600012']);
+  assert.deepEqual([first.id, second.id], ['02600012', '02600013']);
   const after = await store.getAll();
   assert.deepEqual(after.slice(0, 39), before.filter((item) => item.id !== '02600010'));
   assert.equal(after.length, 41);
@@ -202,10 +202,10 @@ test('Ghi sinh viên thất bại sau reserve: mã bị bỏ qua và không tái
   fail = true;
   await assert.rejects(store.add(input), StorageError);
   assert.equal(await fs.readFile(filePath, 'utf8'), before);
-  assert.equal(JSON.parse(await fs.readFile(statePath, 'utf8')).highWaterMark, '02600011');
+  assert.equal(JSON.parse(await fs.readFile(statePath, 'utf8')).counters['026'], '00012');
   const restarted = createStudentStore({ filePath, seedPath });
   await restarted.initialize();
-  assert.equal((await restarted.add(input)).id, '02600012');
+  assert.equal((await restarted.add(input)).id, '02600013');
 });
 
 test('Ghi trạng thái thất bại: không ghi sinh viên, state cũ giữ nguyên', async (t) => {
@@ -222,7 +222,7 @@ test('Ghi trạng thái thất bại: không ghi sinh viên, state cũ giữ ngu
   assert.equal(await fs.readFile(filePath, 'utf8'), before);
   assert.equal(await fs.readFile(statePath, 'utf8'), stateBefore);
   fail = false;
-  assert.equal((await store.add(input)).id, '02600011');
+  assert.equal((await store.add(input)).id, '02600012');
 });
 
 test('State hỏng/mất sau khởi tạo: thêm/xóa và restart từ chối, không tự reset', async (t) => {
@@ -273,7 +273,7 @@ test('Bootstrap bị ngắt sau marker: lần khởi động tiếp theo dừng,
 test('ID cũ dạng chữ/gạch nối được xác nhận và xóa đúng, không đổi MSSV hồ sơ khác', async (t) => {
   const { store, filePath, base } = await fixture(t);
   await fs.writeFile(filePath, JSON.stringify([
-    { id: 'sv-0001', ...input }, { id: '2222', ...input, email: 'legacy-short@example.com' },
+    { id: 'sv-0001', ...input, major: 'TOAN' }, { id: '2222', ...input, major: 'TOAN', email: 'legacy-short@example.com' },
   ]), 'utf8');
   assert.equal((await request(base, '/students/SV-0001/delete')).status, 200);
   assert.equal((await store.remove('SV-0001')).id, 'sv-0001');
@@ -302,7 +302,7 @@ test('Tiến trình thực bị ngắt sau reserve: restart không cấp lại m
       }};
       const store=createStudentStore({filePath:target,fileSystem});
       await store.initialize();
-      if(mode==='delete') { await store.remove('02600012'); process.send({deleted:true}); return; }
+      if(mode==='delete') { await store.remove('02600013'); process.send({deleted:true}); return; }
       const student=await store.add(${JSON.stringify(input)});
       process.send({id:student.id});
     })().catch(error=>{console.error(error);process.exit(1)});
@@ -317,16 +317,16 @@ test('Tiến trình thực bị ngắt sau reserve: restart không cấp lại m
   }
   const crash = await launch('crash');
   assert.equal(crash.message.reserved, true);
-  assert.equal(JSON.parse(await fs.readFile(statePath, 'utf8')).highWaterMark, '02600011');
+  assert.equal(JSON.parse(await fs.readFile(statePath, 'utf8')).counters['026'], '00012');
   crash.child.kill();
   await once(crash.child, 'exit');
   const restart = await launch('add');
-  assert.equal(restart.message.id, '02600012');
+  assert.equal(restart.message.id, '02600013');
   await once(restart.child, 'exit');
   const deletion = await launch('delete');
   assert.equal(deletion.message.deleted, true);
   await once(deletion.child, 'exit');
   const afterDelete = await launch('add');
-  assert.equal(afterDelete.message.id, '02600013');
+  assert.equal(afterDelete.message.id, '02600014');
   await once(afterDelete.child, 'exit');
 });

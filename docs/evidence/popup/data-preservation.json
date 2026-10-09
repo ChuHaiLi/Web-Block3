@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-10-09T11:02:23.665Z",
+  "countBefore": 40,
+  "countAfter": 40,
+  "files": {
+    "students.json": {
+      "sha256Before": "6caab3dd9dd84c9bbe80d734f8c87dcd8d904bbd2ceaa0c6b2fc1262d383ff66",
+      "sha256After": "6caab3dd9dd84c9bbe80d734f8c87dcd8d904bbd2ceaa0c6b2fc1262d383ff66",
+      "unchanged": true
+    },
+    "students.seed.json": {
+      "sha256Before": "287559c47c9485d6beff7aee6dbccaf12a7a2c7691fc532f17859d91a605e66c",
+      "sha256After": "287559c47c9485d6beff7aee6dbccaf12a7a2c7691fc532f17859d91a605e66c",
+      "unchanged": true
+    },
+    "students.id-state.json": {
+      "sha256Before": "72000ca8abfdd96d38349b391995126893e68ad03050ba4e29037a7f6cf3e88c",
+      "sha256After": "72000ca8abfdd96d38349b391995126893e68ad03050ba4e29037a7f6cf3e88c",
+      "unchanged": true
+    },
+    "students.id-state.json.initialized": {
+      "sha256Before": "50208d78350a7a160dec59a82df1499b6ca7da33e54c5eb11c97e342118e68bb",
+      "sha256After": "50208d78350a7a160dec59a82df1499b6ca7da33e54c5eb11c97e342118e68bb",
+      "unchanged": true
+    }
+  }
+}

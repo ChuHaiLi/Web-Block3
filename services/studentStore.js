@@ -4,6 +4,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { FIELDS, validateStudent, validateNewStudent, isValidStudentId } = require('../validators/studentValidator');
+const { CATALOG } = require('./studentCatalog');
 
 class StorageError extends Error {
   constructor(message, cause) {
@@ -21,8 +22,8 @@ class StudentConflictError extends Error {
 }
 
 class StudentIdExhaustedError extends Error {
-  constructor() {
-    super('Không thể cấp MSSV mới: đã hết phạm vi 8 chữ số. Dữ liệu hiện có được giữ nguyên.');
+  constructor(prefix) {
+    super(`Không thể cấp MSSV mới: khóa ${prefix.slice(1)} đã hết phạm vi 5 chữ số thứ tự. Dữ liệu hiện có được giữ nguyên.`);
     this.name = 'StudentIdExhaustedError';
   }
 }
@@ -34,18 +35,16 @@ class StudentNotFoundError extends Error {
   }
 }
 
-function maximumNumericId(students) {
-  let maximum = 0n;
-  for (const student of students) {
-    // Tương thích MSSV cũ như 2222; không sửa, không pad lại mã cũ.
-    // Mã có chữ/dấu - không thuộc dãy số tự động.
-    const existingId = student.id.trim();
-    if (/^[0-9]+$/.test(existingId)) {
-      const value = BigInt(existingId);
-      if (value > maximum) maximum = value;
-    }
+// Mã đã biết từng được cấp nhưng đã xóa trước nâng cấp; không cấp lại kể cả kho rỗng.
+const KNOWN_RESERVED_IDS = ['02600011'];
+
+function mergeIssuedId(counters, id) {
+  if (!/^0[0-9]{7}$/.test(id)) return;
+  const prefix = id.slice(0, 3);
+  const sequence = id.slice(3);
+  if (!Object.hasOwn(counters, prefix) || Number(sequence) > Number(counters[prefix])) {
+    counters[prefix] = sequence;
   }
-  return maximum;
 }
 
 function checkRecords(records) {
@@ -112,30 +111,48 @@ function createStudentStore({
     catch (error) { if (error.code === 'ENOENT') return null; throw error; }
   }
 
-  async function readHighWaterMark() {
+  async function readAllocationState({ allowLegacy = false } = {}) {
     const marker = JSON.parse(await fileSystem.readFile(markerPath, 'utf8'));
     const state = JSON.parse(await fileSystem.readFile(statePath, 'utf8'));
-    if (!marker || marker.version !== 1 || Object.keys(marker).length !== 1 ||
-        !state || state.version !== 1 || Object.keys(state).length !== 2 ||
-        typeof state.highWaterMark !== 'string' || !/^[0-9]{8,20}$/.test(state.highWaterMark)) {
+    if (!marker || ![1, 2].includes(marker.version) || Object.keys(marker).length !== 1 ||
+        (!allowLegacy && marker.version !== 2) || !state || Array.isArray(state)) {
       throw new Error('Trạng thái cấp MSSV không hợp lệ; không được tự reset.');
     }
-    return BigInt(state.highWaterMark);
-  }
-
-  function saveHighWaterMark(value) {
-    return writeAtomically(statePath, { version: 1, highWaterMark: String(value).padStart(8, '0') });
-  }
-
-  async function ensureHighWaterMark(students) {
-    const previous = await readHighWaterMark();
-    const current = maximumNumericId(students);
-    // Chỉ được tăng: hỗ trợ nhập dữ liệu cũ có mã số lớn hơn, không giảm sau xóa.
-    if (current > previous) {
-      await saveHighWaterMark(current);
-      return current;
+    if (allowLegacy && marker.version === 1 && state.version === 1 && Object.keys(state).length === 2 &&
+        typeof state.highWaterMark === 'string' && /^[0-9]{8,20}$/.test(state.highWaterMark)) {
+      return { version: 2, legacyHighWaterMark: state.highWaterMark, counters: {} };
     }
-    return previous;
+    if (state.version !== 2 || Object.keys(state).length !== 3 ||
+        typeof state.legacyHighWaterMark !== 'string' || !/^[0-9]{8,20}$/.test(state.legacyHighWaterMark) ||
+        !state.counters || typeof state.counters !== 'object' || Array.isArray(state.counters) ||
+        Object.keys(state.counters).length === 0 ||
+        Object.entries(state.counters).some(([prefix, sequence]) =>
+          !/^0[0-9]{2}$/.test(prefix) || typeof sequence !== 'string' || !/^[0-9]{5}$/.test(sequence))) {
+      throw new Error('Trạng thái cấp MSSV theo khóa không hợp lệ; không được tự reset.');
+    }
+    return state;
+  }
+
+  function reconcileCounters(state, students) {
+    const counters = { ...state.counters };
+    for (const item of CATALOG.classes) {
+      const prefix = '0' + item.cohort;
+      if (!Object.hasOwn(counters, prefix)) counters[prefix] = '00000';
+    }
+    // Giữ max của state cũ, dữ liệu còn lại và mã đã biết bị xóa; không giảm.
+    mergeIssuedId(counters, state.legacyHighWaterMark);
+    for (const student of students) mergeIssuedId(counters, student.id.trim());
+    for (const id of KNOWN_RESERVED_IDS) mergeIssuedId(counters, id);
+    return { ...state, counters };
+  }
+
+  async function ensureCounters(students) {
+    const previous = await readAllocationState();
+    const current = reconcileCounters(previous, students);
+    if (JSON.stringify(previous) !== JSON.stringify(current)) {
+      await writeAtomically(statePath, current);
+    }
+    return current;
   }
 
   function initialize() {
@@ -147,6 +164,11 @@ function createStudentStore({
         const studentsContent = await optionalFile(filePath);
         if (studentsContent === null && (marker !== null || state !== null || initialized)) {
           throw new Error('Kho đã khởi tạo nhưng file sinh viên bị mất; không được seed lại.');
+        }
+        if (studentsContent !== null && marker === null && state === null) {
+          // Không thể phân biệt dữ liệu nhập cũ với kho mất cả metadata.
+          // Ưu tiên giữ lịch sử: không tự bootstrap lại trên hồ sơ đang tồn tại.
+          throw new Error('File sinh viên có sẵn nhưng thiếu cả state/marker; cần phục hồi lịch sử đáng tin cậy, không tự reset.');
         }
         let students;
         if (studentsContent === null) {
@@ -162,9 +184,17 @@ function createStudentStore({
           await fileSystem.writeFile(markerPath, JSON.stringify({ version: 1 }) + '\n', {
             encoding: 'utf8', flag: 'wx', flush: true,
           });
-          await saveHighWaterMark(maximumNumericId(students));
+          await writeAtomically(statePath, reconcileCounters({ version: 2, legacyHighWaterMark: '00000000', counters: {} }, students));
+          await writeAtomically(markerPath, { version: 2 });
         } else {
-          await ensureHighWaterMark(students);
+          const previous = await readAllocationState({ allowLegacy: true });
+          const current = reconcileCounters(previous, students);
+          if (JSON.parse(state).version === 1 || JSON.stringify(previous) !== JSON.stringify(current)) {
+            await writeAtomically(statePath, current);
+          }
+          // State v2 trước, marker v2 sau: crash giữa hai bước có thể hoàn tất an toàn.
+          // Marker v2 cấm vô tình nạp lại state v1 và hạ lịch sử các bộ đếm.
+          if (JSON.parse(marker).version === 1) await writeAtomically(markerPath, { version: 2 });
         }
         initialized = true;
       } catch (error) {
@@ -201,15 +231,19 @@ function createStudentStore({
           errors.email = 'Email này đã được sử dụng. Vui lòng nhập email khác.';
         }
         if (Object.keys(errors).length) throw new StudentConflictError(errors);
-        const maximum = await ensureHighWaterMark(students);
-        if (maximum >= 99999999n) throw new StudentIdExhaustedError();
-        const id = String(maximum + 1n).padStart(8, '0');
+        const state = await ensureCounters(students);
+        const selectedClass = CATALOG.classes.find((item) => item.code === validation.values.className);
+        const prefix = '0' + selectedClass.cohort;
+        const maximum = Number(state.counters[prefix]);
+        if (maximum >= 99999) throw new StudentIdExhaustedError(prefix);
+        const sequence = String(maximum + 1).padStart(5, '0');
+        const id = prefix + sequence;
         if (students.some((item) => item.id.trim().toUpperCase() === id)) {
           throw new Error('Ứng viên MSSV bị trùng.');
         }
         // Reserve bền vững TRƯỚC ghi sinh viên. Lỗi/ngắt sau đây chỉ bỏ qua mã,
         // tuyệt đối không rollback bộ đếm để dùng lại mã đã reserve.
-        await saveHighWaterMark(maximum + 1n);
+        await writeAtomically(statePath, { ...state, counters: { ...state.counters, [prefix]: sequence } });
         const student = { id, ...validation.values };
         await writeAtomically(filePath, [...students, student]);
         return student;
@@ -229,7 +263,7 @@ function createStudentStore({
         const index = students.findIndex((item) => item.id.trim().toUpperCase() === id.toUpperCase());
         if (index < 0) throw new StudentNotFoundError();
         // Kiểm tra trạng thái trước xóa, giữ max vĩnh viễn kể cả xóa hồ sơ cuối.
-        await ensureHighWaterMark(students);
+        await ensureCounters(students);
         const student = students[index];
         await writeAtomically(filePath, [...students.slice(0, index), ...students.slice(index + 1)]);
         return student;

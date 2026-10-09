@@ -1,0 +1,58 @@
+{
+  "verifiedAt": "2026-10-09T12:00:50.884Z",
+  "count": 40,
+  "filesUnchangedAfterTests": {
+    "students.json": true,
+    "students.id-state.json": true,
+    "students.id-state.json.initialized": true,
+    "classes.json": true,
+    "majors.json": true,
+    "students.seed.json": true
+  },
+  "originalStudentsBytesPreserved": true,
+  "originalClassCodesAndMajorsPreserved": true,
+  "reserved02600011": true,
+  "allocation": {
+    "version": 2,
+    "legacyHighWaterMark": "02600011",
+    "counters": {
+      "024": "10010",
+      "025": "00010",
+      "026": "00011"
+    }
+  },
+  "documentLinksChecked": 62,
+  "sourceSyntaxChecked": 14,
+  "checks": [
+    {
+      "route": "/students",
+      "status": 200,
+      "rows": 20
+    },
+    {
+      "route": "/students?page=2",
+      "status": 200,
+      "rows": 20
+    },
+    {
+      "route": "/students?q=nguyen&className=24CNTT1&major=CNTT",
+      "status": 200,
+      "rows": 1
+    },
+    {
+      "route": "/students/02400001/delete",
+      "status": 200,
+      "rows": 0
+    },
+    {
+      "route": "/students/02600011/delete",
+      "status": 404,
+      "rows": 0
+    },
+    {
+      "route": "/students?page=0",
+      "status": 400,
+      "rows": 0
+    }
+  ]
+}

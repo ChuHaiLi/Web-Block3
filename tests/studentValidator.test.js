@@ -76,11 +76,11 @@ test('Ngành phải thuộc danh sách; không tin giá trị từ prototype', (
   assert.ok(validateStudent(Object.create(valid)).errors.id);
 });
 
-test('Form mới không cần id, chỉ lấy bốn trường và giữ dữ liệu hợp lệ', () => {
-  const { id, ...input } = valid;
+test('Form mới chỉ nhận ba trường, suy ngành và giữ dữ liệu hợp lệ', () => {
+  const { id, major, ...input } = valid;
   const result = validateNewStudent({ ...input, extra: 'ignored' });
   assert.equal(result.isValid, true);
-  assert.deepEqual(result.values, input);
+  assert.deepEqual(result.values, { ...input, major });
   assert.equal(Object.hasOwn(result.values, 'id'), false);
   const invalid = validateNewStudent({ ...input, email: 'bad' });
   assert.ok(invalid.errors.email);
@@ -88,7 +88,7 @@ test('Form mới không cần id, chỉ lấy bốn trường và giữ dữ li�
 });
 
 test('Không chấp nhận id do client gửi, kể cả rỗng, mảng và số', () => {
-  const { id, ...input } = valid;
+  const { id, major, ...input } = valid;
   for (const supplied of ['02400001', '', [], {}, 123, undefined]) {
     const result = validateNewStudent({ ...input, id: supplied });
     assert.equal(result.isValid, false);

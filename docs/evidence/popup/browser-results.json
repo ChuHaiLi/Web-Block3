@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-10-09T11:02:23.670Z",
+  "browser": "Chrome 154.0.8037.98",
+  "javaScriptEnabled": false,
+  "initialCount": 40,
+  "desktop": {
+    "rosterWidth": 1360,
+    "workspaceWidth": 1360,
+    "viewportWidth": 1440,
+    "documentWidth": 1440
+  },
+  "popup": {
+    "x": 400,
+    "y": 219.734375,
+    "width": 640,
+    "height": 560.53125
+  },
+  "note": "Tất cả POST dùng bản sao dữ liệu trong thư mục tạm; server cổng3000 chỉ GET. page.evaluate chỉ kiểm tra trạng thái trong công cụ QA, không thêm script vào website.",
+  "results": [
+    {
+      "check": "GET200/SSR sáu cột, không script; bảng chiếm toàn chiều ngang container desktop1440",
+      "status": "PASS"
+    },
+    {
+      "check": "Nút mở, X và Hủy hoạt động bằng HTML; popup giữa màn hình, có overlay, không ghi dữ liệu",
+      "status": "PASS"
+    },
+    {
+      "check": "Bàn phím Enter mở, autofocus tên, Tab tới email với focus rõ, Esc đóng và trả focus nút mở",
+      "status": "PASS"
+    },
+    {
+      "check": "POST rỗng422: fallback SSR hiện form/lỗi trực tiếp, không bị popup đóng che, không ghi JSON",
+      "status": "PASS"
+    },
+    {
+      "check": "POST email sai422 giữ tên/ngành/lớp và focus lỗi; Hủy fallback về GET, không ghi",
+      "status": "PASS"
+    },
+    {
+      "check": "Thêm trong popup→303→GET200; cấp02600012, giữ hồ sơ khác, refresh không tạo trùng",
+      "status": "PASS"
+    },
+    {
+      "check": "Search không dấu, AND lớp/ngành, giữ query, Reset, Pagination và nút mở khi không kết quả vẫn hoạt động",
+      "status": "PASS"
+    },
+    {
+      "check": "Xóa/GET xác nhận/Hủy/POST303 vẫn hoạt động; chỉ xóa hồ sơ kiểm thử trên kho tạm, giữ counter",
+      "status": "PASS"
+    },
+    {
+      "check": "Tên100 ký tự và email dài wrap trong cột, không làm vỡ bảng/tràn desktop",
+      "status": "PASS"
+    },
+    {
+      "check": "Mobile390×844 và320×640: trang không tràn, bảng cuộn riêng, popup nằm trong viewport và Hủy hoạt động",
+      "status": "PASS"
+    },
+    {
+      "check": "View Source thật chứa sinh viên đã lọc và markup popup/form do EJS render, không cần clientJS",
+      "status": "PASS"
+    },
+    {
+      "check": "Server demo GET200 dùng template mới; 40 sinh viên/seed/counter/marker thật không đổi",
+      "status": "PASS"
+    }
+  ]
+}

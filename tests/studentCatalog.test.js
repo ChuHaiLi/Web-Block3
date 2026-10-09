@@ -8,7 +8,7 @@ const os = require('node:os');
 const { loadCatalog, CATALOG } = require('../services/studentCatalog');
 const { validateNewStudent } = require('../validators/studentValidator');
 
-const valid = { name: 'Nguyễn An', email: 'catalog@example.com', className: '24C11', major: 'CNTT' };
+const valid = { name: 'Nguyễn An', email: 'catalog@example.com', className: '24C11' };
 
 test('Danh mục độc lập có bốn ngành/mười lớp, kế thừa seed và hai lớp demo', async () => {
   assert.equal(Object.keys(CATALOG.majors).length, 4);
@@ -18,24 +18,26 @@ test('Danh mục độc lập có bốn ngành/mười lớp, kế thừa seed v
     { className: '24CNTT', major: 'CNTT' }, { className: '24C11', major: 'CNTT' },
   ];
   for (const student of current) {
-    assert.ok(CATALOG.classes.some((item) => item.code === student.className && item.major === student.major));
+    assert.ok(CATALOG.classes.some((item) => item.code === student.className && item.majorCode === student.major));
     assert.ok(Object.hasOwn(CATALOG.majors, student.major));
   }
-  assert.ok(CATALOG.classes.some((item) => item.code === '24C11' && item.major === 'CNTT'));
-  assert.ok(CATALOG.classes.some((item) => item.code === '24CNTT' && item.major === 'CNTT'));
+  assert.ok(CATALOG.classes.some((item) => item.code === '24C11' && item.majorCode === 'CNTT'));
+  assert.ok(CATALOG.classes.some((item) => item.code === '24CNTT' && item.majorCode === 'CNTT'));
 });
 
-test('POST chỉ chấp nhận cặp lớp/ngành có trong JSON; giữ giá trị khi chọn sai', () => {
+test('POST suy ngành từ lớp trong JSON; lớp lạ và major giả mạo bị từ chối', () => {
   for (const item of CATALOG.classes) {
-    assert.equal(validateNewStudent({ ...valid, className: item.code, major: item.major }).isValid, true);
+    const result = validateNewStudent({ ...valid, className: item.code });
+    assert.equal(result.isValid, true);
+    assert.equal(result.values.major, item.majorCode);
   }
   for (const input of [{ ...valid, className: 'LOP-MOI' }, { ...valid, className: '__proto__' },
     { ...valid, className: '24C11', major: 'KHDL' }]) {
     const result = validateNewStudent(input);
     assert.equal(result.isValid, false);
-    assert.ok(result.errors.className);
+    assert.ok(result.errors.className || result.errors.form);
     assert.equal(result.values.className, input.className);
-    assert.equal(result.values.major, input.major);
+    if (input.major) assert.equal(result.values.major, 'CNTT');
   }
   assert.equal(validateNewStudent({ ...valid, className: ' 24C11 ' }).isValid, true);
 });
@@ -46,14 +48,18 @@ test('Danh mục JSON hỏng, rỗng, mã trùng hoặc quan hệ sai bị phát
   const majorsPath = path.join(directory, 'majors.json');
   const classesPath = path.join(directory, 'classes.json');
   const goodMajor = { code: 'CNTT', name: 'Công nghệ thông tin' };
-  const goodClass = { code: '24C11', major: 'CNTT' };
+  const goodClass = { code: '24C11', name: '24C11', majorCode: 'CNTT', cohort: '24' };
   for (const [majors, classes] of [
     [[goodMajor, goodMajor], [goodClass]], [[goodMajor], [goodClass, goodClass]],
-    [[goodMajor], [{ ...goodClass, major: 'OTHER' }]], [[], [goodClass]],
+    [[goodMajor], [{ ...goodClass, majorCode: 'OTHER' }]], [[], [goodClass]],
     [[goodMajor], []], [[{ ...goodMajor, code: '__proto__' }], [goodClass]],
     [[goodMajor], [{ ...goodClass, code: 'x'.repeat(31) }]],
     [[goodMajor], [{ ...goodClass, code: ' 24C11' }]],
     [[goodMajor], [{ ...goodClass, extra: 'unexpected' }]],
+    [[goodMajor], [{ ...goodClass, cohort: '2x' }]],
+    [[goodMajor], [{ ...goodClass, cohort: 24 }]],
+    [[goodMajor], [{ ...goodClass, cohort: '25' }]],
+    [[goodMajor], [{ ...goodClass, name: '' }]],
   ]) {
     await fs.writeFile(majorsPath, JSON.stringify(majors), 'utf8');
     await fs.writeFile(classesPath, JSON.stringify(classes), 'utf8');

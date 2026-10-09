@@ -1,12 +1,12 @@
 [
-  { "code": "24C11", "major": "CNTT" },
-  { "code": "24CNTT", "major": "CNTT" },
-  { "code": "24CNTT1", "major": "CNTT" },
-  { "code": "24CNTT2", "major": "CNTT" },
-  { "code": "25KHDL1", "major": "KHDL" },
-  { "code": "25KHDL2", "major": "KHDL" },
-  { "code": "26TOAN1", "major": "TOAN" },
-  { "code": "26TOAN2", "major": "TOAN" },
-  { "code": "24VL1", "major": "VL" },
-  { "code": "24VL2", "major": "VL" }
+  { "code": "24C11", "name": "24C11", "majorCode": "CNTT", "cohort": "24" },
+  { "code": "24CNTT", "name": "24CNTT", "majorCode": "CNTT", "cohort": "24" },
+  { "code": "24CNTT1", "name": "24CNTT1", "majorCode": "CNTT", "cohort": "24" },
+  { "code": "24CNTT2", "name": "24CNTT2", "majorCode": "CNTT", "cohort": "24" },
+  { "code": "25KHDL1", "name": "25KHDL1", "majorCode": "KHDL", "cohort": "25" },
+  { "code": "25KHDL2", "name": "25KHDL2", "majorCode": "KHDL", "cohort": "25" },
+  { "code": "26TOAN1", "name": "26TOAN1", "majorCode": "TOAN", "cohort": "26" },
+  { "code": "26TOAN2", "name": "26TOAN2", "majorCode": "TOAN", "cohort": "26" },
+  { "code": "24VL1", "name": "24VL1", "majorCode": "VL", "cohort": "24" },
+  { "code": "24VL2", "name": "24VL2", "majorCode": "VL", "cohort": "24" }
 ]

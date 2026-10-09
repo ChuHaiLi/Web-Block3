@@ -26,9 +26,12 @@ function loadCatalog({
     majorCodes.add(major.code);
   }
   for (const item of classes) {
-    if (!item || Object.keys(item).length !== 2 || !cleanString(item.code, 30) ||
-        !majorCodes.has(item.major) || classCodes.has(item.code)) {
-      throw new Error('Danh mục lớp có mã không hợp lệ, trùng mã hoặc ngành không tồn tại.');
+    if (!item || Object.keys(item).length !== 4 || !cleanString(item.code, 30) ||
+        !/^[A-Za-z0-9-]+$/.test(item.code) || !cleanString(item.name, 100) ||
+        !cleanString(item.majorCode, 10) || !majorCodes.has(item.majorCode) ||
+        typeof item.cohort !== 'string' || !/^[0-9]{2}$/.test(item.cohort) ||
+        !item.code.startsWith(item.cohort) || classCodes.has(item.code)) {
+      throw new Error('Danh mục lớp sinh hoạt có mã/tên/khóa không hợp lệ, trùng mã hoặc ngành không tồn tại.');
     }
     classCodes.add(item.code);
   }

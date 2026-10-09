@@ -1,0 +1,18 @@
+{
+  "verifiedAt": "2026-10-09T11:37:40.386Z",
+  "count": 40,
+  "backup": "D:\\VSCode\\HCMUS\\Web\\Block3\\data\\backups\\before-cohort-20261009113740363",
+  "state": {
+    "version": 1,
+    "highWaterMark": "02600011"
+  },
+  "files": {
+    "students.json": "6caab3dd9dd84c9bbe80d734f8c87dcd8d904bbd2ceaa0c6b2fc1262d383ff66",
+    "students.id-state.json": "72000ca8abfdd96d38349b391995126893e68ad03050ba4e29037a7f6cf3e88c",
+    "students.id-state.json.initialized": "50208d78350a7a160dec59a82df1499b6ca7da33e54c5eb11c97e342118e68bb",
+    "classes.json": "291f2819f201c93ba03e981f3b3f9e27b5d3a9c90cccd98b1bc7f99a82abd4aa",
+    "majors.json": "0a1aff817c4692edc8d51e0b52630993d2d6d3265b658bce62306373630f6b54",
+    "students.seed.json": "287559c47c9485d6beff7aee6dbccaf12a7a2c7691fc532f17859d91a605e66c"
+  },
+  "mismatches": []
+}

@@ -1,0 +1,496 @@
+TAP version 13
+# Subtest: Danh mục độc lập có bốn ngành/mười lớp, kế thừa seed và hai lớp demo
+ok 1 - Danh mục độc lập có bốn ngành/mười lớp, kế thừa seed và hai lớp demo
+  ---
+  duration_ms: 25.1262
+  type: 'test'
+  ...
+# Subtest: POST suy ngành từ lớp trong JSON; lớp lạ và major giả mạo bị từ chối
+ok 2 - POST suy ngành từ lớp trong JSON; lớp lạ và major giả mạo bị từ chối
+  ---
+  duration_ms: 3.7277
+  type: 'test'
+  ...
+# Subtest: Danh mục JSON hỏng, rỗng, mã trùng hoặc quan hệ sai bị phát hiện, không tự ghi đè
+ok 3 - Danh mục JSON hỏng, rỗng, mã trùng hoặc quan hệ sai bị phát hiện, không tự ghi đè
+  ---
+  duration_ms: 365.4991
+  type: 'test'
+  ...
+# Subtest: Mọi lớp suy ngành từ JSON, MSSV đúng0YY+5 số; các lớp cùng khóa chung counter
+ok 4 - Mọi lớp suy ngành từ JSON, MSSV đúng0YY+5 số; các lớp cùng khóa chung counter
+  ---
+  duration_ms: 506.5054
+  type: 'test'
+  ...
+# Subtest: HTTP đồng thời khác ngành cùng khóa và khác khóa:303, không mất/trùng, đúng major
+ok 5 - HTTP đồng thời khác ngành cùng khóa và khác khóa:303, không mất/trùng, đúng major
+  ---
+  duration_ms: 294.5678
+  type: 'test'
+  ...
+# Subtest: Migration v1 giữ bytes sinh viên, max cũ/deleted02600011 và khởi động lại không giảm
+ok 6 - Migration v1 giữ bytes sinh viên, max cũ/deleted02600011 và khởi động lại không giảm
+  ---
+  duration_ms: 209.7019
+  type: 'test'
+  ...
+# Subtest: State cũ chưa ghi02600011 vẫn đặt floor11; max đã biết của khóa25 không giảm
+ok 7 - State cũ chưa ghi02600011 vẫn đặt floor11; max đã biết của khóa25 không giảm
+  ---
+  duration_ms: 183.4981
+  type: 'test'
+  ...
+# Subtest: Khóa mới khai báo trong state và countercao v2 được giữ, không giảm khi reconcile
+ok 8 - Khóa mới khai báo trong state và countercao v2 được giữ, không giảm khi reconcile
+  ---
+  duration_ms: 101.7252
+  type: 'test'
+  ...
+# Subtest: Hết5 chữ số chỉ chặn khóa đó; các khóa khác vẫn cấp mã
+ok 9 - Hết5 chữ số chỉ chặn khóa đó; các khóa khác vẫn cấp mã
+  ---
+  duration_ms: 96.5541
+  type: 'test'
+  ...
+# Subtest: Form ba trường/popup; id/major giả mạo bị422, giữ input và không ghi cảstate
+ok 10 - Form ba trường/popup; id/major giả mạo bị422, giữ input và không ghi cảstate
+  ---
+  duration_ms: 203.2627
+  type: 'test'
+  ...
+# Subtest: Statev2 hỏng/mất hoặc bịhạ vềv1: mutation/restart từ chối, không reset
+ok 11 - Statev2 hỏng/mất hoặc bịhạ vềv1: mutation/restart từ chối, không reset
+  ---
+  duration_ms: 229.3231
+  type: 'test'
+  ...
+# Subtest: Migration lỗi ghi giữ statev1 để retry; crash giữa statev2/marker hoàn tất an toàn
+ok 12 - Migration lỗi ghi giữ statev1 để retry; crash giữa statev2/marker hoàn tất an toàn
+  ---
+  duration_ms: 166.1842
+  type: 'test'
+  ...
+# Subtest: Thêm khóa27 vào danh mục: khởi động tạo counterriêng, cấp02700001 và suyngành
+ok 13 - Thêm khóa27 vào danh mục: khởi động tạo counterriêng, cấp02700001 và suyngành
+  ---
+  duration_ms: 268.4754
+  type: 'test'
+  ...
+# Subtest: Mất đồng thời state/marker trên kho có hồ sơ: không bootstrap lại hoặc reset lịch sử
+ok 14 - Mất đồng thời state/marker trên kho có hồ sơ: không bootstrap lại hoặc reset lịch sử
+  ---
+  duration_ms: 50.5495
+  type: 'test'
+  ...
+# Subtest: GET xác nhận đúng năm trường, POST form và Hủy; GET/Hủy không đổi JSON hoặc bộ đếm
+ok 15 - GET xác nhận đúng năm trường, POST form và Hủy; GET/Hủy không đổi JSON hoặc bộ đếm
+  ---
+  duration_ms: 260.8491
+  type: 'test'
+  ...
+# Subtest: POST xóa đúng một mã URL, bỏ qua ID khác trong body, 303; redirect/refresh không xóa thêm
+ok 16 - POST xóa đúng một mã URL, bỏ qua ID khác trong body, 303; redirect/refresh không xóa thêm
+  ---
+  duration_ms: 209.9437
+  type: 'test'
+  ...
+# Subtest: ID không tồn tại trả404, ID URL bất thường trả400, không thay đổi dữ liệu/path
+ok 17 - ID không tồn tại trả404, ID URL bất thường trả400, không thay đổi dữ liệu/path
+  ---
+  duration_ms: 126.536
+  type: 'test'
+  ...
+# Subtest: Tên HTML nguy hiểm được escape trong trang xác nhận và nút danh sách
+ok 18 - Tên HTML nguy hiểm được escape trong trang xác nhận và nút danh sách
+  ---
+  duration_ms: 114.5937
+  type: 'test'
+  ...
+# Subtest: Nút Xóa xuất hiện khi tìm/lọc/phân trang; xóa cuối trang cuối tính lại về trang có dữ liệu
+ok 19 - Nút Xóa xuất hiện khi tìm/lọc/phân trang; xóa cuối trang cuối tính lại về trang có dữ liệu
+  ---
+  duration_ms: 163.3505
+  type: 'test'
+  ...
+# Subtest: Xóa max, restart store, thêm tiếp không dùng lại mã đã xóa; xóa hết không seed/reset mã
+ok 20 - Xóa max, restart store, thêm tiếp không dùng lại mã đã xóa; xóa hết không seed/reset mã
+  ---
+  duration_ms: 834.8801
+  type: 'test'
+  ...
+# Subtest: Xóa/thêm đồng thời cùng hàng đợi: giữ mọi hồ sơ khác và MSSV duy nhất
+ok 21 - Xóa/thêm đồng thời cùng hàng đợi: giữ mọi hồ sơ khác và MSSV duy nhất
+  ---
+  duration_ms: 96.9596
+  type: 'test'
+  ...
+# Subtest: Hai POST xóa cùng mã: một303/một404, không mất hồ sơ khác
+ok 22 - Hai POST xóa cùng mã: một303/một404, không mất hồ sơ khác
+  ---
+  duration_ms: 88.0925
+  type: 'test'
+  ...
+# Subtest: Lỗi ghi xóa:500, không redirect/thông báo thành công, JSON nguyên vẹn; retry sau lỗi hoạt động
+ok 23 - Lỗi ghi xóa:500, không redirect/thông báo thành công, JSON nguyên vẹn; retry sau lỗi hoạt động
+  ---
+  duration_ms: 114.8954
+  type: 'test'
+  ...
+# Subtest: Ghi sinh viên thất bại sau reserve: mã bị bỏ qua và không tái sử dụng sau restart
+ok 24 - Ghi sinh viên thất bại sau reserve: mã bị bỏ qua và không tái sử dụng sau restart
+  ---
+  duration_ms: 104.6493
+  type: 'test'
+  ...
+# Subtest: Ghi trạng thái thất bại: không ghi sinh viên, state cũ giữ nguyên
+ok 25 - Ghi trạng thái thất bại: không ghi sinh viên, state cũ giữ nguyên
+  ---
+  duration_ms: 81.2663
+  type: 'test'
+  ...
+# Subtest: State hỏng/mất sau khởi tạo: thêm/xóa và restart từ chối, không tự reset
+ok 26 - State hỏng/mất sau khởi tạo: thêm/xóa và restart từ chối, không tự reset
+  ---
+  duration_ms: 170.7921
+  type: 'test'
+  ...
+# Subtest: Marker mất hoặc dữ liệu mất sau bootstrap: restart từ chối, không tạo lại marker/seed
+ok 27 - Marker mất hoặc dữ liệu mất sau bootstrap: restart từ chối, không tạo lại marker/seed
+  ---
+  duration_ms: 55.1072
+  type: 'test'
+  ...
+# Subtest: Bootstrap bị ngắt sau marker: lần khởi động tiếp theo dừng, không suy lại max
+ok 28 - Bootstrap bị ngắt sau marker: lần khởi động tiếp theo dừng, không suy lại max
+  ---
+  duration_ms: 54.4335
+  type: 'test'
+  ...
+# Subtest: ID cũ dạng chữ/gạch nối được xác nhận và xóa đúng, không đổi MSSV hồ sơ khác
+ok 29 - ID cũ dạng chữ/gạch nối được xác nhận và xóa đúng, không đổi MSSV hồ sơ khác
+  ---
+  duration_ms: 65.0793
+  type: 'test'
+  ...
+# Subtest: Tiến trình thực bị ngắt sau reserve: restart không cấp lại mã; xóa max rồi restart vẫn tăng
+ok 30 - Tiến trình thực bị ngắt sau reserve: restart không cấp lại mã; xóa max rồi restart vẫn tăng
+  ---
+  duration_ms: 806.2601
+  type: 'test'
+  ...
+# Subtest: Phân trang 42 bản ghi thành 20/20/2, không lặp hoặc bỏ sót, không sửa dữ liệu
+ok 31 - Phân trang 42 bản ghi thành 20/20/2, không lặp hoặc bỏ sót, không sửa dữ liệu
+  ---
+  duration_ms: 35.9437
+  type: 'test'
+  ...
+# Subtest: Lọc trước phân trang; giữ q, lớp và ngành trong mọi liên kết
+ok 32 - Lọc trước phân trang; giữ q, lớp và ngành trong mọi liên kết
+  ---
+  duration_ms: 4.4769
+  type: 'test'
+  ...
+# Subtest: Trang vượt giới hạn về trang cuối; rỗng/không kết quả vẫn có trang 1 an toàn
+ok 33 - Trang vượt giới hạn về trang cuối; rỗng/không kết quả vẫn có trang 1 an toàn
+  ---
+  duration_ms: 1.0273
+  type: 'test'
+  ...
+# Subtest: Page sai kiểu/âm/0/thập phân/quá lớn/mảng bị từ chối, không gây lỗi template
+ok 34 - Page sai kiểu/âm/0/thập phân/quá lớn/mảng bị từ chối, không gây lỗi template
+  ---
+  duration_ms: 4.5014
+  type: 'test'
+  ...
+# Subtest: Liên kết phân trang encode query nguy hiểm và giới hạn số nút với tập lớn
+ok 35 - Liên kết phân trang encode query nguy hiểm và giới hạn số nút với tập lớn
+  ---
+  duration_ms: 36.1178
+  type: 'test'
+  ...
+# Subtest: Lần đầu seed đúng 40 bản ghi duy nhất, đúng năm trường, UTF-8
+ok 36 - Lần đầu seed đúng 40 bản ghi duy nhất, đúng năm trường, UTF-8
+  ---
+  duration_ms: 122.9411
+  type: 'test'
+  ...
+# Subtest: Khởi tạo lại giữ nguyên dữ liệu và không seed khi mảng rỗng
+ok 37 - Khởi tạo lại giữ nguyên dữ liệu và không seed khi mảng rỗng
+  ---
+  duration_ms: 233.9442
+  type: 'test'
+  ...
+# Subtest: JSON hỏng, sai model và bản ghi trùng không bị ghi đè
+ok 38 - JSON hỏng, sai model và bản ghi trùng không bị ghi đè
+  ---
+  duration_ms: 57.0524
+  type: 'test'
+  ...
+# Subtest: Validation thất bại, client gửi ID và email trùng không thay đổi file
+ok 39 - Validation thất bại, client gửi ID và email trùng không thay đổi file
+  ---
+  duration_ms: 65.8371
+  type: 'test'
+  ...
+# Subtest: Hai thao tác gần nhau cấp ID khác nhau; email trùng chỉ lưu một
+ok 40 - Hai thao tác gần nhau cấp ID khác nhau; email trùng chỉ lưu một
+  ---
+  duration_ms: 153.1377
+  type: 'test'
+  ...
+# Subtest: Lỗi rename giữ file chính; dọn file tạm và hàng đợi tiếp tục
+ok 41 - Lỗi rename giữ file chính; dọn file tạm và hàng đợi tiếp tục
+  ---
+  duration_ms: 98.8974
+  type: 'test'
+  ...
+# Subtest: Lỗi ghi file tạm giữ dữ liệu; seed sai số lượng bị từ chối
+ok 42 - Lỗi ghi file tạm giữ dữ liệu; seed sai số lượng bị từ chối
+  ---
+  duration_ms: 69.1545
+  type: 'test'
+  ...
+# Subtest: File bị mất lúc chạy phải báo lỗi, không tự seed lại
+ok 43 - File bị mất lúc chạy phải báo lỗi, không tự seed lại
+  ---
+  duration_ms: 67.0945
+  type: 'test'
+  ...
+# Subtest: Hai lần thêm liên tiếp lấy max theo khóa+1, giữ tám chữ số và bản ghi cũ
+ok 44 - Hai lần thêm liên tiếp lấy max theo khóa+1, giữ tám chữ số và bản ghi cũ
+  ---
+  duration_ms: 119.4118
+  type: 'test'
+  ...
+# Subtest: MSSV cũ không đồng nhất được giữ nguyên; không dùng lại lỗ trống dưới max
+ok 45 - MSSV cũ không đồng nhất được giữ nguyên; không dùng lại lỗ trống dưới max
+  ---
+  duration_ms: 134.7201
+  type: 'test'
+  ...
+# Subtest: Mảng rỗng cấp02400001; hết phạm vi khóa24 trả lỗi và giữ file
+ok 46 - Mảng rỗng cấp02400001; hết phạm vi khóa24 trả lỗi và giữ file
+  ---
+  duration_ms: 161.5875
+  type: 'test'
+  ...
+# Subtest: MSSV số cũ ngoài định dạng được giữ nguyên, không tham gia bộ đếm khóa
+ok 47 - MSSV số cũ ngoài định dạng được giữ nguyên, không tham gia bộ đếm khóa
+  ---
+  duration_ms: 126.8999
+  type: 'test'
+  ...
+# Subtest: Gọi store trực tiếp vẫn kiểm tra danh mục và quan hệ lớp/ngành trong hàng đợi
+ok 48 - Gọi store trực tiếp vẫn kiểm tra danh mục và quan hệ lớp/ngành trong hàng đợi
+  ---
+  duration_ms: 77.073
+  type: 'test'
+  ...
+# Subtest: Chuẩn hóa MSSV, Unicode, khoảng trắng và tên miền; model đúng năm trường
+ok 49 - Chuẩn hóa MSSV, Unicode, khoảng trắng và tên miền; model đúng năm trường
+  ---
+  duration_ms: 4.8631
+  type: 'test'
+  ...
+# Subtest: Mọi trường đều bắt buộc; xử lý thiếu, rỗng và sai kiểu
+ok 50 - Mọi trường đều bắt buộc; xử lý thiếu, rỗng và sai kiểu
+  ---
+  duration_ms: 3.461
+  type: 'test'
+  ...
+# Subtest: MSSV có độ dài 4–20 và chỉ chữ Latin, chữ số, dấu -
+ok 51 - MSSV có độ dài 4–20 và chỉ chữ Latin, chữ số, dấu -
+  ---
+  duration_ms: 0.8416
+  type: 'test'
+  ...
+# Subtest: Tên Việt, dấu nháy và gạch nối hợp lệ; giới hạn tên/lớp và ký tự điều khiển
+ok 52 - Tên Việt, dấu nháy và gạch nối hợp lệ; giới hạn tên/lớp và ký tự điều khiển
+  ---
+  duration_ms: 0.7
+  type: 'test'
+  ...
+# Subtest: Email thông dụng: dấu +, dấu nháy, tên miền con; từ chối cú pháp sai
+ok 53 - Email thông dụng: dấu +, dấu nháy, tên miền con; từ chối cú pháp sai
+  ---
+  duration_ms: 0.8782
+  type: 'test'
+  ...
+# Subtest: Ngành phải thuộc danh sách; không tin giá trị từ prototype
+ok 54 - Ngành phải thuộc danh sách; không tin giá trị từ prototype
+  ---
+  duration_ms: 0.6842
+  type: 'test'
+  ...
+# Subtest: Form mới chỉ nhận ba trường, suy ngành và giữ dữ liệu hợp lệ
+ok 55 - Form mới chỉ nhận ba trường, suy ngành và giữ dữ liệu hợp lệ
+  ---
+  duration_ms: 0.7912
+  type: 'test'
+  ...
+# Subtest: Không chấp nhận id do client gửi, kể cả rỗng, mảng và số
+ok 56 - Không chấp nhận id do client gửi, kể cả rỗng, mảng và số
+  ---
+  duration_ms: 0.6039
+  type: 'test'
+  ...
+# Subtest: GET 200: kho có 40, trang đầu 20 sinh viên, năm trường và cột thao tác, không ID/script
+ok 57 - GET 200: kho có 40, trang đầu 20 sinh viên, năm trường và cột thao tác, không ID/script
+  ---
+  duration_ms: 240.0551
+  type: 'test'
+  ...
+# Subtest: POST hợp lệ lưu JSON, trả 303; GET đích và refresh không thêm trùng
+ok 58 - POST hợp lệ lưu JSON, trả 303; GET đích và refresh không thêm trùng
+  ---
+  duration_ms: 232.8018
+  type: 'test'
+  ...
+# Subtest: Thiếu trường, email sai/trùng và ngành lạ: 422, không ghi file
+ok 59 - Thiếu trường, email sai/trùng và ngành lạ: 422, không ghi file
+  ---
+  duration_ms: 227.7252
+  type: 'test'
+  ...
+# Subtest: Escape chuỗi HTML nguy hiểm cả trong form lỗi và danh sách SSR
+ok 60 - Escape chuỗi HTML nguy hiểm cả trong form lỗi và danh sách SSR
+  ---
+  duration_ms: 124.339
+  type: 'test'
+  ...
+# Subtest: Sai kiểu, body quá lớn, quá nhiều tham số và Content-Type sai không thay đổi file
+ok 61 - Sai kiểu, body quá lớn, quá nhiều tham số và Content-Type sai không thay đổi file
+  ---
+  duration_ms: 102.9893
+  type: 'test'
+  ...
+# Subtest: Hai POST đồng thời cấp ID khác nhau; email trùng chỉ một POST thành công
+ok 62 - Hai POST đồng thời cấp ID khác nhau; email trùng chỉ một POST thành công
+  ---
+  duration_ms: 204.4247
+  type: 'test'
+  ...
+# Subtest: Empty state, 404, lỗi đọc và lỗi lưu đều trả HTML phù hợp
+ok 63 - Empty state, 404, lỗi đọc và lỗi lưu đều trả HTML phù hợp
+  ---
+  duration_ms: 153.1607
+  type: 'test'
+  ...
+# Subtest: Dữ liệu tồn tại sau khi dừng và khởi động lại tiến trình Node.js thực tế
+ok 64 - Dữ liệu tồn tại sau khi dừng và khởi động lại tiến trình Node.js thực tế
+  ---
+  duration_ms: 1081.0246
+  type: 'test'
+  ...
+# Subtest: Client không được đặt MSSV qua POST, kể cả id rỗng hoặc lặp
+ok 65 - Client không được đặt MSSV qua POST, kể cả id rỗng hoặc lặp
+  ---
+  duration_ms: 101.2474
+  type: 'test'
+  ...
+# Subtest: Hết MSSV trả 409, giữ input và không ghi JSON
+ok 66 - Hết MSSV trả 409, giữ input và không ghi JSON
+  ---
+  duration_ms: 80.7386
+  type: 'test'
+  ...
+# Subtest: Tìm MSSV toàn bộ/một phần và tên đầy đủ/một phần, không phân biệt hoa/dấu
+ok 67 - Tìm MSSV toàn bộ/một phần và tên đầy đủ/một phần, không phân biệt hoa/dấu
+  ---
+  duration_ms: 120.2854
+  type: 'test'
+  ...
+# Subtest: Tìm tên hoặc MSSV dùng OR; không tìm theo email
+ok 68 - Tìm tên hoặc MSSV dùng OR; không tìm theo email
+  ---
+  duration_ms: 83.2345
+  type: 'test'
+  ...
+# Subtest: Lọc lớp/ngành, kết hợp bằng AND và giữ giá trị đã chọn
+ok 69 - Lọc lớp/ngành, kết hợp bằng AND và giữ giá trị đã chọn
+  ---
+  duration_ms: 122.5368
+  type: 'test'
+  ...
+# Subtest: Danh sách lớp lấy từ danh mục JSON, không phụ thuộc kết quả tìm kiếm
+ok 70 - Danh sách lớp lấy từ danh mục JSON, không phụ thuộc kết quả tìm kiếm
+  ---
+  duration_ms: 80.3684
+  type: 'test'
+  ...
+# Subtest: Không kết quả khác danh sách rỗng; reset trả đủ dữ liệu và không ghi file
+ok 71 - Không kết quả khác danh sách rỗng; reset trả đủ dữ liệu và không ghi file
+  ---
+  duration_ms: 55.2967
+  type: 'test'
+  ...
+# Subtest: Query sai kiểu/độ dài/ngành/lớp trả 400; không ghi dữ liệu hay thực thi HTML
+ok 72 - Query sai kiểu/độ dài/ngành/lớp trả 400; không ghi dữ liệu hay thực thi HTML
+  ---
+  duration_ms: 120.3549
+  type: 'test'
+  ...
+# Subtest: POST lớp ngoài danh mục hoặc major giả mạo:422, giữ lớp, không ghi;24C11 suy CNTT
+ok 73 - POST lớp ngoài danh mục hoặc major giả mạo:422, giữ lớp, không ghi;24C11 suy CNTT
+  ---
+  duration_ms: 89.4032
+  type: 'test'
+  ...
+# Subtest: HTTP phân trang kho tạm 42 sinh viên: 20/20/2, đủ mã cũ, không ghi JSON
+ok 74 - HTTP phân trang kho tạm 42 sinh viên: 20/20/2, đủ mã cũ, không ghi JSON
+  ---
+  duration_ms: 85.3369
+  type: 'test'
+  ...
+# Subtest: HTTP Search + Filter + Pagination giữ query; form áp dụng mới không mang page cũ
+ok 75 - HTTP Search + Filter + Pagination giữ query; form áp dụng mới không mang page cũ
+  ---
+  duration_ms: 69.7465
+  type: 'test'
+  ...
+# Subtest: HTTP page bất thường trả 400; empty state và POST rỗng đều đủ locals
+ok 76 - HTTP page bất thường trả 400; empty state và POST rỗng đều đủ locals
+  ---
+  duration_ms: 101.8909
+  type: 'test'
+  ...
+# Subtest: Popup GET: form duy nhất, mở/đóng declarative, bảng sáu cột và không clientJS
+ok 77 - Popup GET: form duy nhất, mở/đóng declarative, bảng sáu cột và không clientJS
+  ---
+  duration_ms: 44.8902
+  type: 'test'
+  ...
+# Subtest: POST422: form SSR hiện trực tiếp, giữ giá trị và focus lỗi, JSON/counter không đổi
+ok 78 - POST422: form SSR hiện trực tiếp, giữ giá trị và focus lỗi, JSON/counter không đổi
+  ---
+  duration_ms: 45.567
+  type: 'test'
+  ...
+# Subtest: Lỗi form chung/clientID và409 vẫn thấy form; GET sau303 trở lại popup
+ok 79 - Lỗi form chung/clientID và409 vẫn thấy form; GET sau303 trở lại popup
+  ---
+  duration_ms: 75.7309
+  type: 'test'
+  ...
+# Subtest: Empty/no results vẫn có nút mở popup và giữ hai trạng thái riêng
+ok 80 - Empty/no results vẫn có nút mở popup và giữ hai trạng thái riêng
+  ---
+  duration_ms: 42.1459
+  type: 'test'
+  ...
+# Subtest: Thuật ngữ lớp sinh hoạt trên bảng/form/filter/xóa/lỗi; giữ className và dữ liệu
+ok 81 - Thuật ngữ lớp sinh hoạt trên bảng/form/filter/xóa/lỗi; giữ className và dữ liệu
+  ---
+  duration_ms: 65.0583
+  type: 'test'
+  ...
+1..81
+# tests 81
+# suites 0
+# pass 81
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4337.1708

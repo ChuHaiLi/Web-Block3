@@ -38,7 +38,7 @@ function selectStudents(allStudents, query = {}) {
     }
   }
   if (filters.className && !classes.includes(filters.className)) {
-    throw new StudentQueryError('Lớp lọc không tồn tại trong danh mục.');
+    throw new StudentQueryError('Lớp sinh hoạt dùng để lọc không tồn tại trong danh mục.');
   }
   if (filters.major && !Object.hasOwn(MAJORS, filters.major)) {
     throw new StudentQueryError('Ngành lọc không hợp lệ.');
