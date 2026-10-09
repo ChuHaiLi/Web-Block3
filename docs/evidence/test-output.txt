@@ -1,0 +1,142 @@
+﻿TAP version 13
+# Subtest: Lần đầu seed đúng 40 bản ghi duy nhất, đúng năm trường, UTF-8
+ok 1 - Lần đầu seed đúng 40 bản ghi duy nhất, đúng năm trường, UTF-8
+  ---
+  duration_ms: 49.9864
+  type: 'test'
+  ...
+# Subtest: Khởi tạo lại giữ nguyên dữ liệu và không seed khi mảng rỗng
+ok 2 - Khởi tạo lại giữ nguyên dữ liệu và không seed khi mảng rỗng
+  ---
+  duration_ms: 50.601
+  type: 'test'
+  ...
+# Subtest: JSON hỏng, sai model và bản ghi trùng không bị ghi đè
+ok 3 - JSON hỏng, sai model và bản ghi trùng không bị ghi đè
+  ---
+  duration_ms: 58.4592
+  type: 'test'
+  ...
+# Subtest: Validation thất bại và ID/email trùng không thay đổi file
+ok 4 - Validation thất bại và ID/email trùng không thay đổi file
+  ---
+  duration_ms: 25.7028
+  type: 'test'
+  ...
+# Subtest: Hai thao tác gần nhau đều được lưu; hai ID cùng nhau chỉ lưu một
+ok 5 - Hai thao tác gần nhau đều được lưu; hai ID cùng nhau chỉ lưu một
+  ---
+  duration_ms: 69.411
+  type: 'test'
+  ...
+# Subtest: Lỗi rename giữ file chính; dọn file tạm và hàng đợi tiếp tục
+ok 6 - Lỗi rename giữ file chính; dọn file tạm và hàng đợi tiếp tục
+  ---
+  duration_ms: 49.1398
+  type: 'test'
+  ...
+# Subtest: Lỗi ghi file tạm giữ dữ liệu; seed sai số lượng bị từ chối
+ok 7 - Lỗi ghi file tạm giữ dữ liệu; seed sai số lượng bị từ chối
+  ---
+  duration_ms: 38.1796
+  type: 'test'
+  ...
+# Subtest: File bị mất lúc chạy phải báo lỗi, không tự seed lại
+ok 8 - File bị mất lúc chạy phải báo lỗi, không tự seed lại
+  ---
+  duration_ms: 13.3126
+  type: 'test'
+  ...
+# Subtest: Chuẩn hóa MSSV, Unicode, khoảng trắng và tên miền; model đúng năm trường
+ok 9 - Chuẩn hóa MSSV, Unicode, khoảng trắng và tên miền; model đúng năm trường
+  ---
+  duration_ms: 16.1555
+  type: 'test'
+  ...
+# Subtest: Mọi trường đều bắt buộc; xử lý thiếu, rỗng và sai kiểu
+ok 10 - Mọi trường đều bắt buộc; xử lý thiếu, rỗng và sai kiểu
+  ---
+  duration_ms: 3.5607
+  type: 'test'
+  ...
+# Subtest: MSSV có độ dài 4–20 và chỉ chữ Latin, chữ số, dấu -
+ok 11 - MSSV có độ dài 4–20 và chỉ chữ Latin, chữ số, dấu -
+  ---
+  duration_ms: 2.0241
+  type: 'test'
+  ...
+# Subtest: Tên Việt, dấu nháy và gạch nối hợp lệ; giới hạn tên/lớp và ký tự điều khiển
+ok 12 - Tên Việt, dấu nháy và gạch nối hợp lệ; giới hạn tên/lớp và ký tự điều khiển
+  ---
+  duration_ms: 0.6869
+  type: 'test'
+  ...
+# Subtest: Email thông dụng: dấu +, dấu nháy, tên miền con; từ chối cú pháp sai
+ok 13 - Email thông dụng: dấu +, dấu nháy, tên miền con; từ chối cú pháp sai
+  ---
+  duration_ms: 1.3391
+  type: 'test'
+  ...
+# Subtest: Ngành phải thuộc danh sách; không tin giá trị từ prototype
+ok 14 - Ngành phải thuộc danh sách; không tin giá trị từ prototype
+  ---
+  duration_ms: 0.485
+  type: 'test'
+  ...
+# Subtest: GET 200: response HTML có đủ 40 sinh viên, năm cột, form POST và không có script
+ok 15 - GET 200: response HTML có đủ 40 sinh viên, năm cột, form POST và không có script
+  ---
+  duration_ms: 145.2139
+  type: 'test'
+  ...
+# Subtest: POST hợp lệ lưu JSON, trả 303; GET đích và refresh không thêm trùng
+ok 16 - POST hợp lệ lưu JSON, trả 303; GET đích và refresh không thêm trùng
+  ---
+  duration_ms: 99.0079
+  type: 'test'
+  ...
+# Subtest: Thiếu trường, email sai, ID trùng, email trùng và ngành lạ: 422, không ghi file
+ok 17 - Thiếu trường, email sai, ID trùng, email trùng và ngành lạ: 422, không ghi file
+  ---
+  duration_ms: 137.7643
+  type: 'test'
+  ...
+# Subtest: Escape chuỗi HTML nguy hiểm cả trong form lỗi và danh sách SSR
+ok 18 - Escape chuỗi HTML nguy hiểm cả trong form lỗi và danh sách SSR
+  ---
+  duration_ms: 66.1355
+  type: 'test'
+  ...
+# Subtest: Sai kiểu, body quá lớn, quá nhiều tham số và Content-Type sai không thay đổi file
+ok 19 - Sai kiểu, body quá lớn, quá nhiều tham số và Content-Type sai không thay đổi file
+  ---
+  duration_ms: 52.872
+  type: 'test'
+  ...
+# Subtest: Hai POST khác nhau đều thành công; hai POST cùng ID chỉ một thành công
+ok 20 - Hai POST khác nhau đều thành công; hai POST cùng ID chỉ một thành công
+  ---
+  duration_ms: 66.5047
+  type: 'test'
+  ...
+# Subtest: Empty state, 404, lỗi đọc và lỗi lưu đều trả HTML phù hợp
+ok 21 - Empty state, 404, lỗi đọc và lỗi lưu đều trả HTML phù hợp
+  ---
+  duration_ms: 66.7397
+  type: 'test'
+  ...
+# Subtest: Dữ liệu tồn tại sau khi dừng và khởi động lại tiến trình Node.js thực tế
+ok 22 - Dữ liệu tồn tại sau khi dừng và khởi động lại tiến trình Node.js thực tế
+  ---
+  duration_ms: 1007.7459
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2385.7013

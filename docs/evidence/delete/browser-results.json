@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-10-09T10:29:12.365Z",
+  "browser": "Chrome 154.0.8037.98",
+  "javaScriptEnabled": false,
+  "initialCount": 42,
+  "note": "Toàn bộ POST thêm/xóa dùng bản sao JSON trong thư mục tạm. Server demo chỉ được kiểm tra GET.",
+  "results": [
+    {
+      "check": "Danh sách SSR200 có cột Thao tác và 20 nút Xóa ở trang1, không script",
+      "status": "PASS"
+    },
+    {
+      "check": "Xóa từ Search/Filter mở GET xác nhận đúng năm trường, cảnh báo, không ghi dữ liệu/state",
+      "status": "PASS"
+    },
+    {
+      "check": "Hủy bằng liên kết GET trở lại danh sách, không xóa hoặc tăng bộ đếm",
+      "status": "PASS"
+    },
+    {
+      "check": "Trên bản sao: POST xóa max02600011→303→GET200, chỉ còn41, giữ mọi hồ sơ khác; refresh không xóa thêm",
+      "status": "PASS"
+    },
+    {
+      "check": "Thêm sau xóa max cấp02600012, không dùng lại02600011, form thêm/PRG vẫn hoạt động",
+      "status": "PASS"
+    },
+    {
+      "check": "Search không dấu, Filter, Reset và phân trang20/20/2 cùng nút Xóa vẫn hoạt động",
+      "status": "PASS"
+    },
+    {
+      "check": "Trang xác nhận escape tên HTML, hiển thị như văn bản, không tạo script",
+      "status": "PASS"
+    },
+    {
+      "check": "Mobile390×844, JS tắt: mở xác nhận từ trang3, không tràn trang, Hủy không ghi",
+      "status": "PASS"
+    },
+    {
+      "check": "View Source thật của trang xác nhận có thông tin sinh viên và form POST từ server",
+      "status": "PASS"
+    },
+    {
+      "check": "Server thật GET200/404 đúng, 42 sinh viên/seed/state không đổi; không gửi POST xóa vào file thật",
+      "status": "PASS"
+    }
+  ]
+}

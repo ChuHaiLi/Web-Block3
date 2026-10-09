@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Xác nhận xóa sinh viên · Quản lý học vụ</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Đến nội dung chính</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/students"><span><strong>Quản lý học vụ</strong><span class="brand-subtitle">Không gian quản lý sinh viên</span></span></a>
+      <span class="header-label">Xác nhận xóa sinh viên</span>
+    </div>
+  </header>
+  <main id="main-content" class="delete-shell">
+    <a class="text-link" href="/students">← Trở về danh sách</a>
+    <section class="panel delete-panel" aria-labelledby="delete-title">
+      <p class="eyebrow">QUẢN LÝ SINH VIÊN</p>
+      <h1 id="delete-title">Xác nhận xóa sinh viên</h1>
+      <p class="page-description">Kiểm tra hồ sơ trước khi xác nhận. Chỉ sinh viên dưới đây sẽ bị xóa.</p>
+      <dl class="student-details">
+        <div><dt>MSSV</dt><dd><%= student.id %></dd></div>
+        <div><dt>Họ và tên</dt><dd><%= student.name %></dd></div>
+        <div><dt>Email</dt><dd><%= student.email %></dd></div>
+        <div><dt>Lớp</dt><dd><%= student.className %></dd></div>
+        <div><dt>Ngành học</dt><dd><%= majors[student.major] %></dd></div>
+      </dl>
+      <div class="notice notice-error delete-warning" id="delete-warning" role="alert">
+        <strong>Bạn có chắc chắn muốn xóa sinh viên này? Hành động này không thể hoàn tác.</strong>
+      </div>
+      <form class="delete-form" action="/students/<%= encodeURIComponent(student.id.trim()) %>/delete" method="post" aria-describedby="delete-warning">
+        <button class="danger-button" type="submit">Xác nhận xóa</button>
+        <a class="cancel-button" href="/students">Hủy</a>
+      </form>
+      <p class="delete-footnote">MSSV đã cấp sẽ không được sử dụng lại sau khi xóa.</p>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Danh sách sinh viên và biểu mẫu thêm sinh viên phục vụ quản lý học vụ.">
+  <title>Danh sách sinh viên · Quản lý học vụ</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Đến nội dung chính</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/students" aria-label="Quản lý học vụ — danh sách sinh viên">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 5.5c3.5-1.2 6.5-.5 9 1.5 2.5-2 5.5-2.7 9-1.5v13c-3.5-1.2-6.5-.5-9 1.5-2.5-2-5.5-2.7-9-1.5v-13Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 7v13" stroke="currentColor" stroke-width="1.7"/></svg>
+        </span>
+        <span><strong>Quản lý học vụ</strong><span class="brand-subtitle">Không gian quản lý sinh viên</span></span>
+      </a>
+      <span class="header-label">Danh sách sinh viên</span>
+    </div>
+  </header>
+
+  <main id="main-content" class="page-shell">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">QUẢN LÝ SINH VIÊN</p>
+        <h1>Danh sách sinh viên</h1>
+        <p class="page-description">Thông tin học vụ rõ ràng, tập trung trong một nơi.</p>
+      </div>
+      <div class="student-total" aria-label="Tổng số sinh viên">
+        <strong><%= totalCount %></strong><span>sinh viên</span>
+      </div>
+    </div>
+
+    <% if (success) { %>
+      <div class="notice notice-success" role="status">
+        <strong>Đã thêm sinh viên thành công.</strong> MSSV được cấp: <strong><%= createdId %></strong>.
+      </div>
+    <% } %>
+
+    <% if (deleted) { %>
+      <div class="notice notice-success" role="status"><strong>Đã xóa sinh viên thành công.</strong> Danh sách đã được cập nhật.</div>
+    <% } %>
+
+    <% if (Object.keys(errors).length) { %>
+      <section class="notice notice-error" role="alert" aria-labelledby="error-summary-title">
+        <h2 id="error-summary-title">Chưa thể thêm sinh viên</h2>
+        <p>Vui lòng kiểm tra các thông tin sau. Những thông tin khác đã được giữ lại.</p>
+        <ul>
+          <% for (const [field, message] of Object.entries(errors)) { %>
+            <li><a href="#<%= field === 'form' ? 'create-student' : field %>"><%= message %></a></li>
+          <% } %>
+        </ul>
+      </section>
+    <% } %>
+
+    <div class="workspace-grid">
+      <section class="panel roster-panel" aria-labelledby="roster-title">
+        <div class="panel-heading">
+          <div><h2 id="roster-title">Hồ sơ sinh viên</h2><p>Danh sách thông tin đang được lưu trong hệ thống.</p></div>
+          <span class="count-badge"><%= resultCount %> / <%= totalCount %> hồ sơ</span>
+        </div>
+        <section class="search-section" aria-labelledby="search-title">
+          <h3 id="search-title">Tìm kiếm &amp; lọc</h3>
+          <form class="search-form" action="/students" method="get">
+            <div class="search-keyword">
+              <label for="search-q">Tên hoặc MSSV</label>
+              <input id="search-q" name="q" type="search" value="<%= filters.q %>" maxlength="100" placeholder="Ví dụ: Nguyen hoặc 026000" autocomplete="off">
+            </div>
+            <div>
+              <label for="filter-class">Lớp</label>
+              <select id="filter-class" name="className">
+                <option value="">Tất cả lớp</option>
+                <% for (const className of classes) { %>
+                  <option value="<%= className %>"<% if (filters.className === className) { %> selected<% } %>><%= className %></option>
+                <% } %>
+              </select>
+            </div>
+            <div>
+              <label for="filter-major">Ngành học</label>
+              <select id="filter-major" name="major">
+                <option value="">Tất cả ngành</option>
+                <% for (const [code, label] of Object.entries(majors)) { %>
+                  <option value="<%= code %>"<% if (filters.major === code) { %> selected<% } %>><%= label %></option>
+                <% } %>
+              </select>
+            </div>
+            <div class="search-actions">
+              <button class="submit-button" type="submit">Tìm kiếm / Áp dụng</button>
+              <a class="reset-link" href="/students">Đặt lại bộ lọc</a>
+            </div>
+          </form>
+          <% if (hasFilters) { %>
+            <div class="active-filters" aria-label="Điều kiện đang áp dụng">
+              <span class="filter-label">Đang áp dụng:</span>
+              <% if (filters.q) { %><span class="filter-chip">Từ khóa: <%= filters.q %></span><% } %>
+              <% if (filters.className) { %><span class="filter-chip">Lớp: <%= filters.className %></span><% } %>
+              <% if (filters.major) { %><span class="filter-chip">Ngành: <%= majors[filters.major] %></span><% } %>
+              <% if (filters.q) { %><a class="text-link clear-search" href="<%= clearSearchUrl %>">Xóa tìm kiếm</a><% } %>
+            </div>
+          <% } %>
+          <p class="result-count" role="status">Tìm thấy <strong><%= resultCount %></strong> / <%= totalCount %> sinh viên.</p>
+        </section>
+        <% if (totalCount === 0) { %>
+          <div class="empty-state">
+            <span class="empty-symbol" aria-hidden="true">∅</span>
+            <h3>Chưa có sinh viên</h3>
+            <p>Hãy dùng biểu mẫu để thêm sinh viên đầu tiên.</p>
+            <a class="text-link" href="#create-student">Đến biểu mẫu thêm sinh viên →</a>
+          </div>
+        <% } else if (students.length === 0) { %>
+          <div class="empty-state">
+            <span class="empty-symbol" aria-hidden="true">∅</span>
+            <h3>Không tìm thấy sinh viên phù hợp</h3>
+            <p>Hãy thay đổi từ khóa hoặc các bộ lọc đang áp dụng.</p>
+            <a class="text-link" href="/students">Đặt lại bộ lọc →</a>
+          </div>
+        <% } else { %>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Bảng sinh viên, có thể cuộn ngang trên màn hình nhỏ">
+            <table>
+              <caption class="visually-hidden">Danh sách <%= students.length %> sinh viên gồm MSSV, họ tên, email, lớp, ngành học và thao tác.</caption>
+              <thead><tr><th scope="col">MSSV</th><th scope="col">Họ và tên</th><th scope="col">Email</th><th scope="col">Lớp</th><th scope="col">Ngành học</th><th scope="col">Thao tác</th></tr></thead>
+              <tbody>
+                <% for (const student of students) { %>
+                  <tr>
+                    <th scope="row" class="student-id"><%= student.id %></th>
+                    <td class="student-name"><%= student.name %></td>
+                    <td class="student-email"><%= student.email %></td>
+                    <td><span class="class-badge"><%= student.className %></span></td>
+                    <td><%= majors[student.major] %></td>
+                    <td class="student-actions"><a class="delete-link" href="/students/<%= encodeURIComponent(student.id.trim()) %>/delete" aria-label="Xóa sinh viên <%= student.name %>, MSSV <%= student.id %>">Xóa</a></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">Hiển thị <%= pagination.start %>–<%= pagination.end %> / <%= resultCount %> kết quả <span>Tối đa <%= pagination.pageSize %> sinh viên/trang</span></div>
+        <% } %>
+        <nav class="pagination" aria-label="Phân trang danh sách sinh viên">
+          <p class="pagination-summary">Trang <strong><%= pagination.page %></strong> / <%= pagination.totalPages %></p>
+          <div class="pagination-links">
+            <% if (pagination.previousUrl) { %>
+              <a class="page-link" rel="prev" href="<%= pagination.previousUrl %>">← Trước</a>
+            <% } else { %>
+              <span class="page-link page-disabled" aria-disabled="true">← Trước</span>
+            <% } %>
+            <% for (const link of pagination.pageLinks) { %>
+              <% if (link.gap) { %><span class="page-gap" aria-hidden="true">…</span><% } %>
+              <% if (link.number === pagination.page) { %>
+                <span class="page-link page-current" aria-current="page" aria-label="Trang <%= link.number %>, hiện tại"><%= link.number %></span>
+              <% } else { %>
+                <a class="page-link" href="<%= link.url %>" aria-label="Trang <%= link.number %>"><%= link.number %></a>
+              <% } %>
+            <% } %>
+            <% if (pagination.nextUrl) { %>
+              <a class="page-link" rel="next" href="<%= pagination.nextUrl %>">Sau →</a>
+            <% } else { %>
+              <span class="page-link page-disabled" aria-disabled="true">Sau →</span>
+            <% } %>
+          </div>
+        </nav>
+      </section>
+
+      <section id="create-student" class="panel create-panel" aria-labelledby="create-title">
+        <div class="form-heading"><span class="form-symbol" aria-hidden="true">+</span><h2 id="create-title">Thêm sinh viên</h2><p>Điền thông tin để tạo hồ sơ mới.</p></div>
+        <form class="create-form" action="/students" method="post" novalidate>
+          <p class="required-note">Các trường có <span aria-hidden="true">*</span> đều bắt buộc.</p>
+          <p class="auto-id-note">MSSV sẽ được hệ thống tự động cấp.</p>
+          <div class="form-field">
+            <label for="name">Họ và tên <span aria-hidden="true">*</span></label>
+            <input id="name" name="name" type="text" value="<%= values.name %>" maxlength="100" required autocomplete="name"<% if (errors.name) { %> aria-invalid="true" aria-describedby="name-error"<% } %> placeholder="Ví dụ: Nguyễn Minh Anh">
+            <% if (errors.name) { %><p id="name-error" class="field-error"><%= errors.name %></p><% } %>
+          </div>
+          <div class="form-field">
+            <label for="email">Email <span aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" value="<%= values.email %>" maxlength="254" required autocomplete="email" spellcheck="false"<% if (errors.email) { %> aria-invalid="true" aria-describedby="email-error"<% } %> placeholder="sinhvien@example.com">
+            <% if (errors.email) { %><p id="email-error" class="field-error"><%= errors.email %></p><% } %>
+          </div>
+          <div class="form-field">
+            <label for="major">Ngành học <span aria-hidden="true">*</span></label>
+            <select id="major" name="major" required<% if (errors.major) { %> aria-invalid="true" aria-describedby="major-error"<% } %>>
+              <option value="">Chọn ngành học</option>
+              <% for (const [code, label] of Object.entries(majors)) { %>
+                <option value="<%= code %>"<% if (values.major === code) { %> selected<% } %>><%= label %></option>
+              <% } %>
+            </select>
+            <% if (errors.major) { %><p id="major-error" class="field-error"><%= errors.major %></p><% } %>
+          </div>
+          <div class="form-field">
+            <label for="className">Lớp <span aria-hidden="true">*</span></label>
+            <select id="className" name="className" required aria-describedby="className-hint<% if (errors.className) { %> className-error<% } %>"<% if (errors.className) { %> aria-invalid="true"<% } %>>
+              <option value="">Chọn lớp học</option>
+              <% for (const [code, label] of Object.entries(majors)) { %>
+                <optgroup label="<%= label %>">
+                  <% for (const item of catalogClasses.filter((entry) => entry.major === code)) { %>
+                    <option value="<%= item.code %>"<% if (values.className === item.code) { %> selected<% } %>><%= item.code %></option>
+                  <% } %>
+                </optgroup>
+              <% } %>
+            </select>
+            <p id="className-hint" class="field-hint">Chọn lớp trong nhóm ngành tương ứng. Hệ thống kiểm tra khi gửi form.</p>
+            <% if (errors.className) { %><p id="className-error" class="field-error"><%= errors.className %></p><% } %>
+          </div>
+          <button class="submit-button" type="submit"><span aria-hidden="true">+</span> Thêm sinh viên</button>
+          <p class="form-footnote">Email phải khác với các hồ sơ đã có.</p>
+        </form>
+      </section>
+    </div>
+    <footer class="page-footer">Quản lý học vụ <span>Danh sách &amp; hồ sơ sinh viên</span></footer>
+  </main>
+</body>
+</html>

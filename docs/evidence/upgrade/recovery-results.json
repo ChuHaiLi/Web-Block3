@@ -1,0 +1,57 @@
+{
+  "verifiedAt": "2026-10-09T03:10:48.262Z",
+  "mainCount": 41,
+  "dataUnchanged": true,
+  "sha256": "39f647cf435bcae59bcd6de92216532b0b24bffd7935d44fb5d5f4c5c1be38db",
+  "results": [
+    {
+      "url": "/students",
+      "status": 200,
+      "count": 41,
+      "result": "PASS"
+    },
+    {
+      "url": "/students?q=nguyen",
+      "status": 200,
+      "count": 4,
+      "result": "PASS"
+    },
+    {
+      "url": "/students?q=nguyen&className=24CNTT1&major=CNTT",
+      "status": 200,
+      "count": 1,
+      "result": "PASS"
+    },
+    {
+      "url": "/students?q=2222",
+      "status": 200,
+      "count": 1,
+      "result": "PASS"
+    },
+    {
+      "url": "/students?className=24CNTT",
+      "status": 200,
+      "count": 1,
+      "result": "PASS"
+    },
+    {
+      "url": "/students?q=khong-co-sinh-vien-nay",
+      "status": 200,
+      "count": 0,
+      "result": "PASS"
+    },
+    {
+      "check": "Server đang chạy từ chối ID do client gửi",
+      "status": 422,
+      "result": "PASS"
+    },
+    {
+      "check": "Cấp MSSV đồng thời trên bản sao dữ liệu hiện tại",
+      "ids": [
+        "02600011",
+        "02600012"
+      ],
+      "result": "PASS"
+    }
+  ]
+}

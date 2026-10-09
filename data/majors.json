@@ -1,0 +1,6 @@
+[
+  { "code": "CNTT", "name": "Công nghệ thông tin" },
+  { "code": "KHDL", "name": "Khoa học dữ liệu" },
+  { "code": "TOAN", "name": "Toán học" },
+  { "code": "VL", "name": "Vật lý" }
+]

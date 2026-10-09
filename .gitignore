@@ -1,0 +1,7 @@
+node_modules/
+data/students.json
+data/backups/
+data/*.id-state.json
+data/*.id-state.json.initialized
+data/*.tmp
+*.log

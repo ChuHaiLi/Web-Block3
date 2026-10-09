@@ -1,0 +1,35 @@
+{
+  "verifiedAt": "2026-10-09T10:29:12.357Z",
+  "checks": [
+    {
+      "url": "http://127.0.0.1:3000/students",
+      "status": 200,
+      "rows": 20
+    },
+    {
+      "url": "http://127.0.0.1:3000/students?page=2",
+      "status": 200,
+      "rows": 20
+    },
+    {
+      "url": "http://127.0.0.1:3000/students?page=3",
+      "status": 200,
+      "rows": 2
+    },
+    {
+      "url": "http://127.0.0.1:3000/students/02600011/delete",
+      "status": 200,
+      "rows": 0
+    },
+    {
+      "url": "http://127.0.0.1:3000/students/2222/delete",
+      "status": 200,
+      "rows": 0
+    },
+    {
+      "url": "http://127.0.0.1:3000/students/NO-SUCH-ID/delete",
+      "status": 404,
+      "rows": 0
+    }
+  ]
+}

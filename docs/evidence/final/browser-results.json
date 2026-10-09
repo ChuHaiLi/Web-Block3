@@ -1,0 +1,57 @@
+{
+  "generatedAt": "2026-10-09T03:36:35.652Z",
+  "browser": "Chrome 154.0.8037.98",
+  "javaScriptEnabled": false,
+  "initialCount": 42,
+  "note": "Chrome dùng JSON tạm sao chép từ file thật. Mọi POST kiểm thử chỉ ghi bản sao. Main và seed giữ nguyên hash.",
+  "results": [
+    {
+      "check": "Desktop: HTML SSR 200, trang 1 có 20/42, form hai input và hai select JSON, không ID/script",
+      "status": "PASS"
+    },
+    {
+      "check": "Nút trang/Trước/Sau: 20/20/2, đủ 42 mã không lặp/bỏ sót, JSON không đổi",
+      "status": "PASS"
+    },
+    {
+      "check": "Tìm không dấu/hoa thường + lớp + ngành qua form GET, giữ lựa chọn, HTML có kết quả",
+      "status": "PASS"
+    },
+    {
+      "check": "Xóa q giữ lọc, reset về trang 1; tìm mã cũ 2222 và lọc lớp demo 24C11 hợp lệ",
+      "status": "PASS"
+    },
+    {
+      "check": "Không kết quả khác empty state, trang 1/1; các GET không ghi JSON",
+      "status": "PASS"
+    },
+    {
+      "check": "POST rỗng/sai cặp lớp-ngành: 422, bốn lỗi hoặc lỗi cụ thể, giữ select/input, không ghi",
+      "status": "PASS"
+    },
+    {
+      "check": "Thêm trên bản sao: 02600012, JSON 43, POST303→GET200 trang3, hai refresh không trùng",
+      "status": "PASS"
+    },
+    {
+      "check": "Search+Filter+Next giữ q/className/major/page; đổi điều kiện trở lại trang1, không ghi",
+      "status": "PASS"
+    },
+    {
+      "check": "View Source thật có MSSV/tên kết quả đã render từ server",
+      "status": "PASS"
+    },
+    {
+      "check": "Mobile390×844: GET lọc và Next hoạt động khi JS tắt, không tràn trang, bảng cuộn riêng",
+      "status": "PASS"
+    },
+    {
+      "check": "Skip link, Tab, label và trạng thái aria-current của phân trang",
+      "status": "PASS"
+    },
+    {
+      "check": "Server thật cổng3000: sáu GET200, phân trang20/20/2, search/legacy24C11 đúng",
+      "status": "PASS"
+    }
+  ]
+}

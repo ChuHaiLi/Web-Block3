@@ -1,0 +1,226 @@
+﻿TAP version 13
+# Subtest: Lần đầu seed đúng 40 bản ghi duy nhất, đúng năm trường, UTF-8
+ok 1 - Lần đầu seed đúng 40 bản ghi duy nhất, đúng năm trường, UTF-8
+  ---
+  duration_ms: 46.9669
+  type: 'test'
+  ...
+# Subtest: Khởi tạo lại giữ nguyên dữ liệu và không seed khi mảng rỗng
+ok 2 - Khởi tạo lại giữ nguyên dữ liệu và không seed khi mảng rỗng
+  ---
+  duration_ms: 218.5375
+  type: 'test'
+  ...
+# Subtest: JSON hỏng, sai model và bản ghi trùng không bị ghi đè
+ok 3 - JSON hỏng, sai model và bản ghi trùng không bị ghi đè
+  ---
+  duration_ms: 74.0174
+  type: 'test'
+  ...
+# Subtest: Validation thất bại, client gửi ID và email trùng không thay đổi file
+ok 4 - Validation thất bại, client gửi ID và email trùng không thay đổi file
+  ---
+  duration_ms: 75.2395
+  type: 'test'
+  ...
+# Subtest: Hai thao tác gần nhau cấp ID khác nhau; email trùng chỉ lưu một
+ok 5 - Hai thao tác gần nhau cấp ID khác nhau; email trùng chỉ lưu một
+  ---
+  duration_ms: 103.925
+  type: 'test'
+  ...
+# Subtest: Lỗi rename giữ file chính; dọn file tạm và hàng đợi tiếp tục
+ok 6 - Lỗi rename giữ file chính; dọn file tạm và hàng đợi tiếp tục
+  ---
+  duration_ms: 60.9759
+  type: 'test'
+  ...
+# Subtest: Lỗi ghi file tạm giữ dữ liệu; seed sai số lượng bị từ chối
+ok 7 - Lỗi ghi file tạm giữ dữ liệu; seed sai số lượng bị từ chối
+  ---
+  duration_ms: 31.3735
+  type: 'test'
+  ...
+# Subtest: File bị mất lúc chạy phải báo lỗi, không tự seed lại
+ok 8 - File bị mất lúc chạy phải báo lỗi, không tự seed lại
+  ---
+  duration_ms: 10.9682
+  type: 'test'
+  ...
+# Subtest: Hai lần thêm liên tiếp lấy max+1, giữ tám chữ số và toàn bộ bản ghi cũ
+ok 9 - Hai lần thêm liên tiếp lấy max+1, giữ tám chữ số và toàn bộ bản ghi cũ
+  ---
+  duration_ms: 56.2371
+  type: 'test'
+  ...
+# Subtest: MSSV cũ không đồng nhất được giữ nguyên; không dùng lại lỗ trống dưới max
+ok 10 - MSSV cũ không đồng nhất được giữ nguyên; không dùng lại lỗ trống dưới max
+  ---
+  duration_ms: 15.2809
+  type: 'test'
+  ...
+# Subtest: Mảng rỗng cấp 00000001; hết phạm vi trả lỗi và file giữ nguyên
+ok 11 - Mảng rỗng cấp 00000001; hết phạm vi trả lỗi và file giữ nguyên
+  ---
+  duration_ms: 39.0932
+  type: 'test'
+  ...
+# Subtest: MSSV số cũ lớn hơn phạm vi không bị đổi và không gây cấp lại mã nhỏ hơn
+ok 12 - MSSV số cũ lớn hơn phạm vi không bị đổi và không gây cấp lại mã nhỏ hơn
+  ---
+  duration_ms: 12.6331
+  type: 'test'
+  ...
+# Subtest: Chuẩn hóa MSSV, Unicode, khoảng trắng và tên miền; model đúng năm trường
+ok 13 - Chuẩn hóa MSSV, Unicode, khoảng trắng và tên miền; model đúng năm trường
+  ---
+  duration_ms: 6.6532
+  type: 'test'
+  ...
+# Subtest: Mọi trường đều bắt buộc; xử lý thiếu, rỗng và sai kiểu
+ok 14 - Mọi trường đều bắt buộc; xử lý thiếu, rỗng và sai kiểu
+  ---
+  duration_ms: 6.5839
+  type: 'test'
+  ...
+# Subtest: MSSV có độ dài 4–20 và chỉ chữ Latin, chữ số, dấu -
+ok 15 - MSSV có độ dài 4–20 và chỉ chữ Latin, chữ số, dấu -
+  ---
+  duration_ms: 1.2448
+  type: 'test'
+  ...
+# Subtest: Tên Việt, dấu nháy và gạch nối hợp lệ; giới hạn tên/lớp và ký tự điều khiển
+ok 16 - Tên Việt, dấu nháy và gạch nối hợp lệ; giới hạn tên/lớp và ký tự điều khiển
+  ---
+  duration_ms: 0.918
+  type: 'test'
+  ...
+# Subtest: Email thông dụng: dấu +, dấu nháy, tên miền con; từ chối cú pháp sai
+ok 17 - Email thông dụng: dấu +, dấu nháy, tên miền con; từ chối cú pháp sai
+  ---
+  duration_ms: 1.5263
+  type: 'test'
+  ...
+# Subtest: Ngành phải thuộc danh sách; không tin giá trị từ prototype
+ok 18 - Ngành phải thuộc danh sách; không tin giá trị từ prototype
+  ---
+  duration_ms: 0.9102
+  type: 'test'
+  ...
+# Subtest: Form mới không cần id, chỉ lấy bốn trường và giữ dữ liệu hợp lệ
+ok 19 - Form mới không cần id, chỉ lấy bốn trường và giữ dữ liệu hợp lệ
+  ---
+  duration_ms: 0.9183
+  type: 'test'
+  ...
+# Subtest: Không chấp nhận id do client gửi, kể cả rỗng, mảng và số
+ok 20 - Không chấp nhận id do client gửi, kể cả rỗng, mảng và số
+  ---
+  duration_ms: 0.8871
+  type: 'test'
+  ...
+# Subtest: GET 200: đủ 40 sinh viên, năm cột, form GET/POST và không có input ID/script
+ok 21 - GET 200: đủ 40 sinh viên, năm cột, form GET/POST và không có input ID/script
+  ---
+  duration_ms: 211.2356
+  type: 'test'
+  ...
+# Subtest: POST hợp lệ lưu JSON, trả 303; GET đích và refresh không thêm trùng
+ok 22 - POST hợp lệ lưu JSON, trả 303; GET đích và refresh không thêm trùng
+  ---
+  duration_ms: 106.7948
+  type: 'test'
+  ...
+# Subtest: Thiếu trường, email sai/trùng và ngành lạ: 422, không ghi file
+ok 23 - Thiếu trường, email sai/trùng và ngành lạ: 422, không ghi file
+  ---
+  duration_ms: 116.2882
+  type: 'test'
+  ...
+# Subtest: Escape chuỗi HTML nguy hiểm cả trong form lỗi và danh sách SSR
+ok 24 - Escape chuỗi HTML nguy hiểm cả trong form lỗi và danh sách SSR
+  ---
+  duration_ms: 51.5026
+  type: 'test'
+  ...
+# Subtest: Sai kiểu, body quá lớn, quá nhiều tham số và Content-Type sai không thay đổi file
+ok 25 - Sai kiểu, body quá lớn, quá nhiều tham số và Content-Type sai không thay đổi file
+  ---
+  duration_ms: 55.1661
+  type: 'test'
+  ...
+# Subtest: Hai POST đồng thời cấp ID khác nhau; email trùng chỉ một POST thành công
+ok 26 - Hai POST đồng thời cấp ID khác nhau; email trùng chỉ một POST thành công
+  ---
+  duration_ms: 77.4278
+  type: 'test'
+  ...
+# Subtest: Empty state, 404, lỗi đọc và lỗi lưu đều trả HTML phù hợp
+ok 27 - Empty state, 404, lỗi đọc và lỗi lưu đều trả HTML phù hợp
+  ---
+  duration_ms: 73.7315
+  type: 'test'
+  ...
+# Subtest: Dữ liệu tồn tại sau khi dừng và khởi động lại tiến trình Node.js thực tế
+ok 28 - Dữ liệu tồn tại sau khi dừng và khởi động lại tiến trình Node.js thực tế
+  ---
+  duration_ms: 844.2096
+  type: 'test'
+  ...
+# Subtest: Client không được đặt MSSV qua POST, kể cả id rỗng hoặc lặp
+ok 29 - Client không được đặt MSSV qua POST, kể cả id rỗng hoặc lặp
+  ---
+  duration_ms: 43.9016
+  type: 'test'
+  ...
+# Subtest: Hết MSSV trả 409, giữ input và không ghi JSON
+ok 30 - Hết MSSV trả 409, giữ input và không ghi JSON
+  ---
+  duration_ms: 23.7464
+  type: 'test'
+  ...
+# Subtest: Tìm MSSV toàn bộ/một phần và tên đầy đủ/một phần, không phân biệt hoa/dấu
+ok 31 - Tìm MSSV toàn bộ/một phần và tên đầy đủ/một phần, không phân biệt hoa/dấu
+  ---
+  duration_ms: 79.3402
+  type: 'test'
+  ...
+# Subtest: Tìm tên hoặc MSSV dùng OR; không tìm theo email
+ok 32 - Tìm tên hoặc MSSV dùng OR; không tìm theo email
+  ---
+  duration_ms: 44.7823
+  type: 'test'
+  ...
+# Subtest: Lọc lớp/ngành, kết hợp bằng AND và giữ giá trị đã chọn
+ok 33 - Lọc lớp/ngành, kết hợp bằng AND và giữ giá trị đã chọn
+  ---
+  duration_ms: 70.3833
+  type: 'test'
+  ...
+# Subtest: Danh sách lớp lấy từ toàn bộ dữ liệu, không phụ thuộc kết quả tìm kiếm
+ok 34 - Danh sách lớp lấy từ toàn bộ dữ liệu, không phụ thuộc kết quả tìm kiếm
+  ---
+  duration_ms: 37.1294
+  type: 'test'
+  ...
+# Subtest: Không kết quả khác danh sách rỗng; reset trả đủ dữ liệu và không ghi file
+ok 35 - Không kết quả khác danh sách rỗng; reset trả đủ dữ liệu và không ghi file
+  ---
+  duration_ms: 25.95
+  type: 'test'
+  ...
+# Subtest: Query sai kiểu/độ dài/ngành/lớp trả 400; không ghi dữ liệu hay thực thi HTML
+ok 36 - Query sai kiểu/độ dài/ngành/lớp trả 400; không ghi dữ liệu hay thực thi HTML
+  ---
+  duration_ms: 82.0076
+  type: 'test'
+  ...
+1..36
+# tests 36
+# suites 0
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2707.0761

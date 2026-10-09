@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-10-09T03:01:53.924Z",
+  "browser": "Chrome 154.0.8037.98",
+  "javaScriptEnabled": false,
+  "initialCount": 41,
+  "note": "Kho tạm là bản sao dữ liệu hiện tại. POST thử không thay đổi file chính hoặc seed.",
+  "results": [
+    {
+      "check": "Desktop 1440×1000: 41 hồ sơ, hai form GET/POST, bốn trường tạo, không input ID/script, lớp lấy cả dữ liệu bổ sung",
+      "status": "PASS"
+    },
+    {
+      "check": "Form GET khi JavaScript tắt: NGUYEN + 24CNTT1 + CNTT cho một kết quả; giữ lựa chọn, HTML response chứa kết quả, JSON không đổi",
+      "status": "PASS"
+    },
+    {
+      "check": "Xóa tìm kiếm giữ bộ lọc lớp/ngành; Đặt lại trả toàn bộ danh sách; không ghi JSON",
+      "status": "PASS"
+    },
+    {
+      "check": "Không kết quả được phân biệt với dữ liệu rỗng; validation POST giữ bốn trường và không ghi khi sai",
+      "status": "PASS"
+    },
+    {
+      "check": "POST thực tế không nhập MSSV: cấp 02600011, lưu xong trả 303, GET hiển thị mã; refresh hai lần không thêm trùng; bản ghi cũ giữ nguyên",
+      "status": "PASS"
+    },
+    {
+      "check": "Mobile 390×844, JavaScript tắt: form GET lọc đúng, bốn trường tạo vẫn độc lập, không tràn trang, bảng cuộn ngang riêng",
+      "status": "PASS"
+    },
+    {
+      "check": "View Source thật của GET tìm kiếm/lọc chứa các hàng kết quả từ server",
+      "status": "PASS"
+    },
+    {
+      "check": "Skip link và Tab tới ô tìm kiếm hoạt động khi JavaScript tắt",
+      "status": "PASS"
+    }
+  ]
+}

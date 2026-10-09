@@ -1,0 +1,82 @@
+{
+  "verifiedAt": "2026-10-09T03:47:18.852Z",
+  "status": "PASS",
+  "syntaxFiles": 12,
+  "documentationLinks": 20,
+  "currentCount": 42,
+  "currentSha256": "7e785a40f427ee942ebd3ae8af0a8508b8e3f7ce72f6dc862a5186fa82102567",
+  "unchanged": true,
+  "seedSha256": "287559c47c9485d6beff7aee6dbccaf12a7a2c7691fc532f17859d91a605e66c",
+  "retainedIds": [
+    "2222",
+    "02600011"
+  ],
+  "checks": [
+    {
+      "method": "GET",
+      "route": "/students",
+      "status": 200,
+      "rows": 20
+    },
+    {
+      "method": "GET",
+      "route": "/students?page=2",
+      "status": 200,
+      "rows": 20
+    },
+    {
+      "method": "GET",
+      "route": "/students?page=3",
+      "status": 200,
+      "rows": 2
+    },
+    {
+      "method": "GET",
+      "route": "/students?page=99",
+      "status": 200,
+      "rows": 2
+    },
+    {
+      "method": "GET",
+      "route": "/students?q=nguyen&className=24CNTT1&major=CNTT&page=2",
+      "status": 200,
+      "rows": 1
+    },
+    {
+      "method": "GET",
+      "route": "/students?q=2222",
+      "status": 200,
+      "rows": 1
+    },
+    {
+      "method": "GET",
+      "route": "/students?className=24C11&major=CNTT",
+      "status": 200,
+      "rows": 1
+    },
+    {
+      "method": "GET",
+      "route": "/students?page=0",
+      "status": 400,
+      "rows": 0
+    },
+    {
+      "method": "GET",
+      "route": "/students?q=khong-ton-tai",
+      "status": 200,
+      "rows": 0
+    },
+    {
+      "method": "POST",
+      "route": "/students",
+      "status": 422,
+      "rows": 20
+    },
+    {
+      "method": "POST",
+      "route": "/students",
+      "status": 422,
+      "rows": 20
+    }
+  ]
+}

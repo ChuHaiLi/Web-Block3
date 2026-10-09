@@ -1,0 +1,23 @@
+{
+  "verifiedAt": "2026-10-09T10:29:12.363Z",
+  "backupPath": "D:\\VSCode\\HCMUS\\Web\\Block3\\data\\backups\\students-before-delete-20261009-171809.json",
+  "backupMatches": true,
+  "current": {
+    "count": 42,
+    "sha256Before": "7e785a40f427ee942ebd3ae8af0a8508b8e3f7ce72f6dc862a5186fa82102567",
+    "sha256After": "7e785a40f427ee942ebd3ae8af0a8508b8e3f7ce72f6dc862a5186fa82102567",
+    "unchanged": true
+  },
+  "counter": {
+    "highWaterMark": "02600011",
+    "sha256Before": "72000ca8abfdd96d38349b391995126893e68ad03050ba4e29037a7f6cf3e88c",
+    "sha256After": "72000ca8abfdd96d38349b391995126893e68ad03050ba4e29037a7f6cf3e88c",
+    "unchanged": true
+  },
+  "seed": {
+    "count": 40,
+    "sha256Before": "287559c47c9485d6beff7aee6dbccaf12a7a2c7691fc532f17859d91a605e66c",
+    "sha256After": "287559c47c9485d6beff7aee6dbccaf12a7a2c7691fc532f17859d91a605e66c",
+    "unchanged": true
+  }
+}

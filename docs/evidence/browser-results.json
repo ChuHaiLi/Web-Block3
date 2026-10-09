@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-10-09T02:37:08.014Z",
+  "browser": "Chrome 154.0.8037.98",
+  "javaScriptEnabled": false,
+  "note": "Kho JSON tạm riêng; dữ liệu ứng dụng chính vẫn có 40 bản ghi. Không phải dữ liệu hay log giả.",
+  "results": [
+    {
+      "check": "Desktop 1440×1000: 40 sinh viên, bảng và form hai cột, không tràn trang, JavaScript tắt",
+      "status": "PASS"
+    },
+    {
+      "check": "Submit form rỗng khi JavaScript tắt: 422, năm lỗi tại trường, file không đổi",
+      "status": "PASS"
+    },
+    {
+      "check": "Email sai: 422, giữ tên Việt và ngành đã nhập, file không đổi",
+      "status": "PASS"
+    },
+    {
+      "check": "Form HTML thực tế, JavaScript tắt: POST 303 → GET 200, lưu sinh viên thứ 41; refresh hai lần không thêm trùng",
+      "status": "PASS"
+    },
+    {
+      "check": "Mobile 390×844: form trước bảng, không tràn toàn trang, bảng cuộn ngang riêng; JavaScript tắt",
+      "status": "PASS"
+    },
+    {
+      "check": "Bàn phím: skip link hoạt động, Tab đến MSSV khi JavaScript tắt",
+      "status": "PASS"
+    },
+    {
+      "check": "Empty state hiển thị đúng trong trình duyệt",
+      "status": "PASS"
+    }
+  ]
+}

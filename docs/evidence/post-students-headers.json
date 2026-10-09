@@ -1,0 +1,17 @@
+{
+  "status": 303,
+  "headers": {
+    "cache-control": "no-store",
+    "connection": "keep-alive",
+    "content-length": "52",
+    "content-security-policy": "default-src 'none'; style-src 'self'; img-src 'self'; script-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Fri, 09 Oct 2026 02:37:05 GMT",
+    "keep-alive": "timeout=5",
+    "location": "/students?created=1",
+    "referrer-policy": "no-referrer",
+    "vary": "Accept",
+    "x-content-type-options": "nosniff"
+  },
+  "destination": "http://127.0.0.1:53892/students?created=1"
+}
